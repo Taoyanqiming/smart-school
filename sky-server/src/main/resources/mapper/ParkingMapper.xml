@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.sky.mapper.ParkingMapper">
+
+    <!-- 筛选停车位 -->
+    <select id="selectSpaces" resultType="com.sky.entity.ParkingSpaces">
+        SELECT *
+        FROM parking.parkingspaces
+        <where>
+            <!-- 根据停车场ID筛选 -->
+            <if test="parkingLotId != null">
+                AND parking_lot_id = #{parkingLotId}
+            </if>
+            <!-- 根据停车位类型筛选 -->
+            <if test="type != null and type != ''">
+                AND type = #{type}
+            </if>
+            <!-- 根据停车位状态筛选 -->
+            <if test="status != null and status != ''">
+                AND status = #{status}
+            </if>
+        </where>
+    </select>
+
+    <!-- 更新停车位信息 -->
+    <update id="updateSpaces" parameterType="ParkingSpaces">
+        UPDATE parking.ParkingSpaces
+        SET
+            status = #{status}
+        WHERE space_id = #{spaceId}
+    </update>
+
+    <!-- 根据停车位ID查询停车位信息 -->
+    <select id="getSpacesById" resultType="com.sky.entity.ParkingSpaces">
+        SELECT *
+        FROM parking.ParkingSpaces
+        WHERE space_id = #{spaceId} AND parking_lot_id = #{parkingLotId}
+    </select>
+</mapper>

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.sky.mapper.LotsMapper">
+
+    <!-- 修改停车场信息 -->
+    <update id="updateLots" parameterType="com.sky.dto.UpdateLotsDTO">
+        UPDATE parking.parkinglots
+        SET name = #{name},
+            location = #{location},
+            total_spaces = #{totalSpaces},
+            available_spaces = #{availableSpaces},
+            price_per_hour = #{pricePerHour},
+            updated_time = NOW()
+        WHERE parking_lot_id = #{parkingLotId}
+    </update>
+
+    <!-- 根据 parkingLotId 查询停车场信息 -->
+    <select id="searchLots" parameterType="Integer" resultType="com.sky.entity.ParkingLots">
+        SELECT * FROM parking.parkinglots WHERE parking_lot_id = #{parkingLotId}
+    </select>
+
+
+    <!-- 根据传入的 ParkingLotsAddDTO 对象更新 available_spaces 字段 -->
+    <update id="addLots" parameterType="com.sky.dto.ParkingLotsAddDTO">
+        UPDATE parking.parkinglots
+        SET available_spaces = available_spaces + #{account}
+        WHERE parking_lot_id = #{parkingLotId}
+    </update>
+
+</mapper>
