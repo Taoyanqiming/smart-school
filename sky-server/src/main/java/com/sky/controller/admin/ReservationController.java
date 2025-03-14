@@ -1,16 +1,12 @@
 package com.sky.controller.admin;
 
-import com.sky.dto.NoticeDTO;
 import com.sky.dto.ParkingLotsAddDTO;
 import com.sky.dto.ReservationsPageQueryDTO;
 import com.sky.dto.UpdateReservationsDTO;
 import com.sky.entity.*;
 import com.sky.result.PageResult;
 import com.sky.result.Result;
-import com.sky.service.FeeService;
-import com.sky.service.NoticeService;
-import com.sky.service.ParkingService;
-import com.sky.service.ReservationService;
+import com.sky.service.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
@@ -24,16 +20,13 @@ import java.util.List;
 @RestController
 @RequestMapping("/admin/reservation")
 @Slf4j
-@Api(tags = "预约记录接口")
+@Api(tags = "管理员预约记录接口")
 public class ReservationController {
     @Autowired
     private ReservationService reservationService;
     @Autowired
     private ParkingService parkingService;
-    @Autowired
-    private FeeService feeService;
-    @Autowired
-    private NoticeService noticeService;
+
     /**
      * 分页根据条件展示记录（默认展示全部） 根据时间排序记录
      */
@@ -70,6 +63,7 @@ public class ReservationController {
         for (Reservations reservation : expiredReservations) {
             // 为每个预约创建 UpdateReservationsDTO 对象
             UpdateReservationsDTO updateReservationsDTO = UpdateReservationsDTO.builder()
+                    .reservationId(reservation.getReservationId())
                     .parkingLotId(reservation.getParkingLotId())
                     .spaceId(reservation.getSpaceId())
                     .startTime(reservation.getStartTime())
@@ -90,29 +84,11 @@ public class ReservationController {
                 parkingService.updateParkingSpace(space);
             }
             //修改停车场车位+1
-            //更新停车场状态，空闲车位-1
             ParkingLotsAddDTO p = new ParkingLotsAddDTO();
             p.setParkingLotId(reservation.getParkingLotId());
             p.setAccount(+1);
             parkingService.addLots(p);
 
-            //生成支付订单
-            Payments payments = Payments.builder()
-                    .userId(reservation.getUserId())
-                    .reservationId(reservation.getReservationId())
-                    .amount(reservation.getTotalFee())
-                    .status("未支付")
-                    .paymentMethod("微信")
-                    .build();
-            feeService.createPay(payments);
-
-            //发送通知信息
-            NoticeDTO noticeDTO = NoticeDTO.builder()
-                    .userId(reservation.getUserId())
-                    .title("账单支付通知")
-                    .content("您有一笔待支付的账单")
-                    .build();
-            noticeService.createNotice(noticeDTO);
         }
     }
 

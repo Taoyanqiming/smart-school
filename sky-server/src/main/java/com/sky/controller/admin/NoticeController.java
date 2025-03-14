@@ -1,6 +1,6 @@
 package com.sky.controller.admin;
 
-import com.sky.dto.NoticeDTO;
+import com.sky.dto.SentNoticeDTO;
 import com.sky.result.Result;
 import com.sky.service.NoticeService;
 import io.swagger.annotations.Api;
@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/admin")
 @Slf4j
-@Api(tags = "通知相关")
+@Api(tags = "管理员通知相关接口")
 public class NoticeController {
 
     @Autowired
@@ -26,8 +26,8 @@ public class NoticeController {
      */
     @PostMapping("/create/notice")
     @ApiOperation("发送通知")
-    public Result createNotice(@RequestBody NoticeDTO noticeDTO) {
-        noticeService.createNotice(noticeDTO);
+    public Result createNotice(@RequestBody SentNoticeDTO sentNoticeDTO) {
+        noticeService.createSentNotice(sentNoticeDTO);
         return Result.success("发送成功");
     }
 

@@ -24,11 +24,20 @@
     </select>
 
     <!-- 更新停车位信息 -->
-    <update id="updateSpaces" parameterType="ParkingSpaces">
+    <update id="updateSpaces" parameterType="com.sky.entity.ParkingSpaces">
         UPDATE parking.ParkingSpaces
-        SET
-            status = #{status}
-        WHERE space_id = #{spaceId}
+        <set>
+            <if test="pricePerHour != null and pricePerHour != ''">
+                price_per_hour = #{pricePerHour},
+            </if>
+            <if test="type != null and type != ''">
+                type = #{type},
+            </if>
+            <if test="status != null and status != ''">
+                status = #{status}
+            </if>
+        </set>
+        WHERE space_id = #{spaceId} and parking_lot_id = #{parkingLotId}
     </update>
 
     <!-- 根据停车位ID查询停车位信息 -->
@@ -36,5 +45,11 @@
         SELECT *
         FROM parking.ParkingSpaces
         WHERE space_id = #{spaceId} AND parking_lot_id = #{parkingLotId}
+    </select>
+
+    <!-- 查询指定停车场内的所有停车位信息 -->
+    <select id="getSpaces" parameterType="int" resultType="com.sky.entity.ParkingSpaces">
+        SELECT * FROM parking.ParkingSpaces
+        WHERE parking_lot_id = #{parkingLotId}
     </select>
 </mapper>

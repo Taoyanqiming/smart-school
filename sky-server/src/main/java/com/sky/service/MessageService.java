@@ -28,13 +28,20 @@ public interface MessageService {
      /**
       * 删除回复信息
       */
-     void deleteReplies(Integer replyId);
+     void deleteReplies(Integer replyId,Integer feedbackId);
 
      /**
       * 用户创建反馈信息
       * @param feedBacksDTO
       */
      void createFeedback(FeedBacksDTO feedBacksDTO);
+
+     /**
+      * 查询回复信息
+      * @param feedbackId
+      * @return
+      */
+    List<Replies> getReplies( Integer feedbackId);
 
 //     /**
 //      * 验证反馈是否属于该用户

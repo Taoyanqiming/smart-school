@@ -38,11 +38,6 @@ public interface UserMapper {
 
     void update(User user);
 
-    /**
-     * 根据iD查询用户信息
-     * @param userId
-     * @return
-     */
-    User getById(@Param("userId") Long userId);
+
 
 }

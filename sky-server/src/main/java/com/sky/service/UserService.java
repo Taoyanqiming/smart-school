@@ -26,15 +26,16 @@ public interface UserService {
      */
     PageResult pageQuery(UserPageQueryDTO userPageQueryDTO);
     /**
-     * 根据iD查询用户信息
-     * @param userId
+     * 根据手机号查询用户信息
+     * @param phoneNumber
      * @return
      */
-    User getById(Long userId);
+    User getByNumber(String phoneNumber);
     /**
      * 修改用户信息
      * @param userDTO
      * @return
      */
     void update(UserDTO userDTO);
+
 }

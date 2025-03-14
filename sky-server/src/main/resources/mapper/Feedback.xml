@@ -6,8 +6,10 @@
     <!-- 分页查看所有反馈信息 -->
     <select id="selectFeedbacks" parameterType="com.sky.dto.FeedBacksPageQueryDTO" resultType="com.sky.vo.FeedBacksVO">
         SELECT
+        f.feedback_id AS feedbackId,
         f.type AS type,
         f.feedback_title AS title,
+        f.feedback_text AS content,
         u.username AS username,
         u.phone_number AS phoneNumber,
         f.feedback_time AS feedbackTime,
@@ -40,7 +42,7 @@
     </select>
 
     <!-- 删除反馈信息 -->
-    <delete id="deleteFeedback" parameterType="Integer">
+    <delete id="deleteFeedback" parameterType="java.lang.Integer">
         DELETE FROM parking.feedbacks
         WHERE feedback_id = #{feedbackId}
     </delete>
@@ -51,7 +53,7 @@
         VALUES (#{userId}, #{feedbackTitle}, #{feedbackText}, #{type}, NOW())
     </insert>
 
-    <select id="getById" parameterType="java.lang.Integer" resultType="com.sky.entity.FeedBacks">
-        SELECT * FROM parking.feedbacks WHERE feedback_id = #{feedbackId}
-    </select>
+<!--    <select id="getById" parameterType="java.lang.Integer" resultType="com.sky.entity.FeedBacks">-->
+<!--        SELECT * FROM parking.feedbacks WHERE feedback_id = #{feedbackId}-->
+<!--    </select>-->
 </mapper>

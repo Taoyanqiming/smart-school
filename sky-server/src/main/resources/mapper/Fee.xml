@@ -43,4 +43,11 @@
         )
 
     </insert>
+
+    <!-- 更新支付状态 -->
+    <update id="updatePaymentStatus" parameterType="com.sky.entity.Payments">
+        UPDATE parking.payments
+        SET status = #{status}
+        WHERE payment_id = #{paymentId}
+    </update>
 </mapper>

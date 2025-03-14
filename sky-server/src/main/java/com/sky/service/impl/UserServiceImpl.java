@@ -12,6 +12,7 @@ import com.sky.exception.AccountNotFoundException;
 import com.sky.exception.PasswordErrorException;
 import com.sky.mapper.UserMapper;
 import com.sky.result.PageResult;
+import com.sky.result.Result;
 import com.sky.service.UserService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,12 +51,8 @@ public class UserServiceImpl implements UserService {
     @Override
     public void save(UserDTO userDTO){
         User user = new User();
-        //对象属性拷贝，前者复制给后者
         BeanUtils.copyProperties(userDTO,user);
-        //设置密码，默认123456
         user.setPassword(PasswordConstant.DEFAULT_PASSWORD);
-        //通过ThreadLocal 获取用户信息
-       // Long currentId = BaseContext.getCurrentId();
         userMapper.insert(user);
     }
 
@@ -75,14 +72,13 @@ public class UserServiceImpl implements UserService {
 
 
     /**
-     * 根据iD查询用户信息
-     * @param userId
+     * 根据phoneNumber查询用户信息
+     * @param phoneNumber
      * @return
      */
     @Override
-    public User getById(Long userId) {
-        User user = userMapper.getById(userId);
-        user.setPassword("******");
+    public User getByNumber(String phoneNumber) {
+        User user = userMapper.getByPhone(phoneNumber);
         return user;
     }
 

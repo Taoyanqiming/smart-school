@@ -29,10 +29,5 @@ public interface MessageMapper {
      * @param feedbackId 反馈 ID
      */
 
-    /**
-     * 根据 ID 获取反馈信息
-     * @param feedbackId 反馈 ID
-     * @return 反馈信息
-     */
-    FeedBacks getById(Integer feedbackId);
+
 }

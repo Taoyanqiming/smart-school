@@ -4,7 +4,7 @@
 <mapper namespace="com.sky.mapper.NoticeMapper">
 
     <!-- 创建通知 -->
-    <insert id="createNotice" parameterType="com.sky.dto.NoticeDTO">
+    <insert id="createNotice" parameterType="com.sky.entity.Notice">
         INSERT INTO parking.notice (user_id, title, content, created_time)
         VALUES (#{userId}, #{title}, #{content}, NOW())
     </insert>
@@ -14,5 +14,9 @@
         DELETE FROM parking.notice
         WHERE notice_id = #{noticeId}
     </delete>
-
+    <!-- 查询通知 -->
+    <select id="selectNoticesByUserId" parameterType="java.lang.Integer" resultType="com.sky.entity.Notice">
+        SELECT * FROM parking.notice
+        WHERE user_id = #{userId}
+    </select>
 </mapper>

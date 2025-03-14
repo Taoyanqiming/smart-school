@@ -59,8 +59,8 @@ public class MessageServiceImpl implements MessageService {
     /**
      * 删除回复信息
      */
-    public void deleteReplies(Integer replyId){
-        replyMapper.deleteById(replyId);
+    public void deleteReplies(Integer replyId,Integer feedbackId){
+        replyMapper.deleteReplies(replyId,feedbackId);
     }
 
     /**
@@ -71,5 +71,15 @@ public class MessageServiceImpl implements MessageService {
    public void createFeedback(FeedBacksDTO feedBacksDTO){
        messageMapper.createFeedbacks(feedBacksDTO);
    }
+
+    /**
+     * 查询回复信息
+     * @param feedbackId
+     * @return
+     */
+    @Override
+    public List<Replies> getReplies( Integer feedbackId){
+        return replyMapper.getReply(feedbackId);
+    }
 
 }

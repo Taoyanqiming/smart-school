@@ -11,26 +11,42 @@
     <insert id="insert">
         insert into parking.users ( username, password, phone_number) values (#{username},#{password},#{phoneNumber})
     </insert>
-    <!--用户分页查询-->
-    <select id="pageQuery" resultType="com.sky.entity.User">
+    <!-- 用户分页查询 -->
+    <select id="pageQuery" parameterType="com.sky.dto.UserPageQueryDTO" resultType="com.sky.entity.User">
         select *
         from parking.users
         <where>
-            <if test="phoneNumber !=null and username!=''">
+            <if test="username != null and username != ''">
                 and username like concat('%',#{username},'%')
+            </if>
+            <if test="phoneNumber != null and phoneNumber != ''">
+                phone_number = #{phoneNumber}
             </if>
         </where>
     </select>
     <!-- 修改用户信息 -->
     <update id="update" parameterType="User">
         update parking.users
-        <set>
-            <if test="username != null and username != ''">username = #{username},</if>
-            <if test="password != null and password != ''">password = #{password},</if>
-            <if test="email != null and email != ''">email = #{email},</if>
-            <if test="phoneNumber != null and phoneNumber != ''">phone_number = #{phoneNumber},</if>
-
-        </set>
+        <trim prefix="set" suffixOverrides=",">
+            <if test="username != null and username != ''">
+                username = #{username},
+            </if>
+            <if test="password != null and password != ''">
+                password = #{password},
+            </if>
+            <if test="email != null and email != ''">
+                email = #{email},
+            </if>
+            <if test="phoneNumber != null and phoneNumber != ''">
+                phone_number = #{phoneNumber},
+            </if>
+            <if test="idNumber != null and idNumber != ''">
+                id_number = #{idNumber},
+            </if>
+            <if test="role != null and role != ''">
+                role = #{role}
+            </if>
+        </trim>
         where user_id = #{userId}
     </update>
 

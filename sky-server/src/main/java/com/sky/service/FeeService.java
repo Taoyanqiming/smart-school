@@ -17,4 +17,7 @@ public interface FeeService {
      * @param payments
      */
     void createPay(Payments payments);
+
+
+    void updatePaymentStatus(Payments payments);
 }

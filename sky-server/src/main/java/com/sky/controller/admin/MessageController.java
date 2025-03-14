@@ -45,10 +45,10 @@ public class MessageController {
     /**
      * 删除回复信息
      */
-    @DeleteMapping("/delete/{replyId}")
+    @DeleteMapping("/delete/{replyId}/{feedbackId}")
     @ApiOperation("管理员删除回复")
-    public Result deleteReply(@PathVariable Integer replyId){
-        messageService.deleteReplies(replyId);
+    public Result deleteReply(@PathVariable Integer replyId,@PathVariable Integer feedbackId){
+        messageService.deleteReplies(replyId,feedbackId);
         return Result.success("删除成功");
     }
 

@@ -19,4 +19,6 @@ public interface FeeMapper {
      * @param payments
      */
     void createPay(Payments payments);
+
+    void updatePaymentStatus(Payments payments);
 }

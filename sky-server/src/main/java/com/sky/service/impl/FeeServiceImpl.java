@@ -38,4 +38,12 @@ public class FeeServiceImpl implements FeeService {
         feeMapper.createPay(payments);
 
     }
+    /**
+     * 修改订单支付状态
+     * @param payments
+     */
+    @Override
+    public void updatePaymentStatus(Payments payments) {
+        feeMapper.updatePaymentStatus(payments);
+    }
 }

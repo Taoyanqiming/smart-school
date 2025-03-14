@@ -2,6 +2,7 @@ package com.sky.controller.pub;
 
 import com.sky.dto.FeedBacksPageQueryDTO;
 import com.sky.dto.RepliesDTO;
+import com.sky.entity.Replies;
 import com.sky.result.PageResult;
 import com.sky.result.Result;
 import com.sky.service.MessageService;
@@ -10,6 +11,8 @@ import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/feedback")
@@ -29,4 +32,14 @@ public class PubMessageController {
         return  Result.success(pageResult);
     }
 
+    /**
+     * 查看所有回复信息
+     */
+    @GetMapping("/page/reply/{feedbackId}")
+    @ApiOperation("查询回复信息")
+    public Result<List<Replies>> getReply( @PathVariable Integer feedbackId){
+        List<Replies> replies = messageService.getReplies(feedbackId);
+
+        return  Result.success(replies);
+    }
 }

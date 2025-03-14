@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/admin/pay")
 @Slf4j
-@Api(tags = "车位费用相关接口")
+@Api(tags = "管理员车位费用相关接口")
 public class FeeController {
     @Autowired
     private FeeService feeService;

@@ -16,13 +16,14 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @ApiModel(description = "反馈查询返回的数据格式")
 public class FeedBacksVO implements Serializable {
-
+    private Integer feedbackId;
     private String title;
+    private String content;
     private String username;
     private String phoneNumber;
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime feedbackTime;
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime replyTime;
     private String replyPerson;
     private String status; // 使用整数表示状态

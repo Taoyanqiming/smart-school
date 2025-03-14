@@ -38,9 +38,9 @@ logging:
 
 sky:
   jwt:
-    admin-secret-key: itcast
+    admin-secret-key: Admin
     admin-ttl: 86400000
-    admin-token-name: token
-    user-secret-key: itheima
+    admin-token-name: Authorization
+    user-secret-key: User
     user-ttl: 86400000
-    user-token-name: authentication
+    user-token-name: Authorization

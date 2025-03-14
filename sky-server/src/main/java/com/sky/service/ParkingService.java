@@ -44,4 +44,12 @@ public interface ParkingService {
      * @param p
      */
     void addLots(ParkingLotsAddDTO p);
+    /**
+     * 返回一个停车场内全部停车位
+     * @param parkingLotId 停车场 ID
+     * @return 停车场内的全部停车位信息
+     */
+    List<ParkingSpaces> getAllParkingSpacesInLot(Integer parkingLotId);
+
+
 }
