@@ -6,6 +6,13 @@ spring:
     active: dev
   main:
     allow-circular-references: true
+  application:
+    name: Service
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 127.0.0.1:8848 # Nacos 服务器地址，根据实际情况修改
+
   datasource:
 #    druid:
       driver-class-name: ${sky.datasource.driver-class-name}
@@ -21,6 +28,22 @@ spring:
 #      test-while-idle: true      # 空闲时进行有效性检查
 #      time-between-eviction-runs-millis: 60000 # 定期检查空闲连接的时间（毫秒）
 #      min-evictable-idle-time-millis: 300000 # 空闲连接的最小可回收时间（毫秒）
+  rabbitmq:
+      host: ${sky.rabbitmq.host}
+      port: ${sky.rabbitmq.port}
+      virtual-host: /quick
+      username: ${sky.rabbitmq.username}
+      password: ${sky.rabbitmq.password}
+  redis:
+    host: ${sky.redis.host}
+    port: ${sky.redis.port}
+    password: ${sky.redis.password}
+    database: ${sky.redis.database}
+
+#      config:
+#        server-addr: 127.0.0.1:8848 # Nacos 服务器地址，根据实际情况修改
+#        file-extension: yaml
+
 
 mybatis:
   mapper-locations: classpath:mapper/*.xml
@@ -38,9 +61,18 @@ logging:
 
 sky:
   jwt:
-    admin-secret-key: Admin
-    admin-ttl: 86400000
-    admin-token-name: Authorization
-    user-secret-key: User
-    user-ttl: 86400000
-    user-token-name: Authorization
+    secret-key: haha
+    ttl: 86400000
+    token-name: Authorization
+
+  obs:
+    bucketName: your-bucket-name
+    endpoint: http://your-endpoint
+    accessKey: your-access-key-id
+    secretKey: your-secret-access-key
+  huaweicloud:
+    obs:
+      endpoint: your-endpoint
+      accessKeyId: your-access-key-id
+      accessKeySecret: your-access-key-secret
+      bucketName: your-bucket-name

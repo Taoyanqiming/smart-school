@@ -17,18 +17,12 @@ public class User implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private Integer userId;
-
-    private String username;
-
-    private String password;
-
-    private String email;
-
     private String phoneNumber;
-
-    private String idNumber;
-
-    private String role; // 'admin' or 'user'
+    private String username;
+    private String password;
+    private String email;
+    private Integer role; // 'admin'1 or 'user'0
+    private String icon;
 
     //@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createTime;

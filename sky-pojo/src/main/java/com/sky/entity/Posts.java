@@ -26,10 +26,14 @@ public class Posts implements Serializable {
 
     private LocalDateTime createTime;
 
-    private Integer viewCount;
+    private Integer view;
 
-    private Integer likeCount;
+    private Integer liked;
+    private String images;
 
-    private Integer favoriteCount;
+    private Integer favorite;
+
+    private boolean isLiked ;
+    private boolean isFavorited ;
 
 }

@@ -4,48 +4,79 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.sky.mapper.PostMapper">
 
+    <!-- 发帖 -->
     <insert id="insertPost" parameterType="com.sky.dto.PostDTO">
-        INSERT INTO parking.posts (user_id, title, content)
+        INSERT INTO school.post (user_id, title, content)
         VALUES (#{userId}, #{title}, #{content})
     </insert>
 
-    <insert id="insertComment" parameterType="com.sky.dto.CommentDTO">
-        INSERT INTO parking.comments (post_id, user_id, parent_comment_id, content)
-        VALUES (#{postId}, #{userId}, #{parentCommentId}, #{content})
+    <!-- 发布评论 -->
+    <insert id="insertComment" parameterType="com.sky.dto.CommentDTO" useGeneratedKeys="true" keyProperty="commentId">
+        INSERT INTO school.comments (user_id, post_id, parent_id, answer_id, content)
+        VALUES (#{userId}, #{postId}, #{parentId}, #{answerId}, #{content})
     </insert>
 
-    <insert id="insertLike" parameterType="com.sky.dto.LikeDTO">
-        INSERT INTO parking.likes (post_id, user_id)
+    <!-- 帖子点赞 -->
+    <insert id="insertLike" parameterType="com.sky.dto.LikeDTO" useGeneratedKeys="true" keyProperty="likeId">
+        INSERT INTO school.likes (post_id, user_id)
         VALUES (#{postId}, #{userId})
     </insert>
 
-    <insert id="insertFavorite" parameterType="com.sky.dto.FavoriteDTO">
-        INSERT INTO parking.favorites (post_id, user_id)
-        VALUES (#{postId}, #{userId})
+    <!-- 评论点赞 -->
+    <insert id="insertCommentLike" parameterType="com.sky.dto.LikeCommentDTO" useGeneratedKeys="true" keyProperty="likeConmentId">
+        INSERT INTO school.comment_likes (comment_id, user_id)
+        VALUES (#{commentId}, #{userId})
     </insert>
 
-    <delete id="deletePost" parameterType="java.lang.Integer">
-        DELETE FROM parking.posts WHERE post_id = #{postId}
+    <!-- 取消帖子点赞 -->
+    <delete id="deleteLiked" parameterType="com.sky.dto.LikeDTO" >
+        DELETE FROM school.likes
+        WHERE post_id = #{postId} AND user_id = #{userId}
     </delete>
 
-    <delete id="deleteComment" parameterType="java.lang.Integer">
-        DELETE FROM parking.comments WHERE comment_id = #{commentId}
+    <!-- 取消评论点赞 -->
+    <delete id="deleteCommentLiked" parameterType="com.sky.dto.LikeCommentDTO">
+        DELETE FROM school.comment_likes
+        WHERE comment_id = #{commentId} AND user_id = #{userId}
     </delete>
 
-    <select id="getPostById" parameterType="java.lang.Integer" resultType="com.sky.entity.Posts">
-        SELECT * FROM parking.posts WHERE post_id = #{postId}
+    <!-- 查询帖子 -->
+    <select id="getPostById" parameterType="java.lang.Integer" resultType="com.sky.vo.PostVO">
+        SELECT * FROM school.post
+        WHERE post_id = #{postId}
     </select>
 
-    <select id="getCommentsByPostId" parameterType="java.lang.Integer" resultType="com.sky.entity.Comments">
-        SELECT * FROM parking.comments WHERE post_id = #{postId}
+    <!-- 查询帖子是否被点赞 -->
+    <select id="isLiked" parameterType="com.sky.dto.LikeDTO" resultType="com.sky.entity.Likes">
+        SELECT * FROM school.likes
+        WHERE post_id = #{postId} AND user_id = #{userId}
     </select>
 
-    <select id="getLikeByPostAndUser" parameterType="com.sky.dto.LikeDTO" resultType="com.sky.entity.Likes">
-        SELECT * FROM parking.likes WHERE post_id = #{postId} AND user_id = #{userId}
+    <!-- 查询评论是否被点赞 -->
+    <select id="isCommentLiked" parameterType="com.sky.dto.LikeCommentDTO" resultType="com.sky.entity.Likes">
+        SELECT * FROM school.comment_likes
+        WHERE comment_id = #{commentId} AND user_id = #{userId}
     </select>
 
-    <select id="getFavoriteByPostAndUser" parameterType="com.sky.dto.FavoriteDTO" resultType="com.sky.entity.Favorites">
-        SELECT * FROM parking.favorites WHERE post_id = #{postId} AND user_id = #{userId}
-    </select>
+    <!-- 更新帖子点赞数 -->
+    <update id="updateLiked">
+        UPDATE school.post
+        SET liked = liked + #{account}
+        WHERE post_id = #{postId}
+    </update>
+
+    <!-- 更新帖子评论数 -->
+    <update id="updateComment">
+        UPDATE school.post
+        SET comment = comment + #{account}
+        WHERE post_id = #{postId}
+    </update>
+
+    <!-- 增加帖子浏览量 -->
+    <update id="incrementViewCount">
+        UPDATE school.post
+        SET view = view + 1
+        WHERE post_id = #{postId}
+    </update>
 
 </mapper>

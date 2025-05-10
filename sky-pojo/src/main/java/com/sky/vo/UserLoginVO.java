@@ -24,6 +24,9 @@ public class UserLoginVO implements Serializable {
     @ApiModelProperty("邮箱")
     private String email;
 
+    @ApiModelProperty("角色")
+    private Integer role;
+
     @ApiModelProperty("手机号")
     private String phoneNumber;
 

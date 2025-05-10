@@ -17,6 +17,8 @@ import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -37,37 +39,25 @@ public class UserController {
      */
     @PostMapping("/login")
     public Result<UserLoginVO> login(@RequestBody UserLoginDTO userLoginDTO) {
-        log.info("用户登录：{}", userLoginDTO);
-        try {
-            User user = userService.login(userLoginDTO);
-            if (user == null) {
-                throw new UserNotFoundException("用户不存在，请检查用户名和密码");
-            }
+        log.info("用户登录： userLoginDTO:{}", userLoginDTO);
+        User user = userService.login(userLoginDTO);
 
-            // 登录成功后，生成管理员 JWT 令牌
-            Map<String, Object> claims = new HashMap<>();
-            claims.put(JwtClaimsConstant.USER_ID, user.getUserId());
-            String token = JwtUtil.createJWT(
-                    jwtProperties.getAdminSecretKey(),
-                    jwtProperties.getAdminTtl(),
-                    claims);
+        // 生成jwt令牌
+        Map<String, Object> claims = new HashMap<>();
+        claims.put(JwtClaimsConstant.USER_ID, user.getUserId());
+        claims.put(JwtClaimsConstant.USER_ROLE, user.getRole()); // 添加角色信息
+        String token = JwtUtil.createJWT(jwtProperties.getSecretKey(), jwtProperties.getTtl(), claims);
+        UserLoginVO userLoginVO = UserLoginVO.builder()
+                .userId(user.getUserId())
+                .userName(user.getUsername())
+                .role(user.getRole())
+                .email(user.getEmail())
+                .phoneNumber(user.getPhoneNumber())
+                .token(token)
+                .build();
 
-            UserLoginVO userLoginVO = UserLoginVO.builder()
-                    .phoneNumber(user.getPhoneNumber())
-                    .email((user.getEmail()))
-                    .userId(user.getUserId())
-                    .userName(user.getUsername())
-                    .token(token)
-                    .build();
-
-            return Result.success(userLoginVO);
-        } catch (UserNotFoundException e) {
-            return Result.error(e.getMessage());
-        }
+        return Result.success(userLoginVO);
     }
-
-
-
 
 
     /**
@@ -75,7 +65,7 @@ public class UserController {
      * @param userDTO
      * @return
      */
-    @PutMapping("/user/update")
+    @PutMapping("/update")
     @ApiOperation("编辑用户信息")
     public Result update(@RequestBody UserDTO userDTO) {
         log.info("编辑用户信息：{}", userDTO);
@@ -86,4 +76,35 @@ public class UserController {
             return Result.error(e.getMessage());
         }
     }
+    /**
+     * 退出
+     * @return
+     */
+    @PostMapping("/logout")
+    public Result<String> logout() {
+        return Result.success("退出成功");
+    }
+
+    /**
+     * 注册
+     * @param userDTO
+     * @return
+     */
+    @PostMapping("/register")
+    @ApiOperation("新增用户")
+    public Result save(@RequestBody UserDTO userDTO) {
+        User user = userService.getByNumber(userDTO.getPhoneNumber());
+        if (user != null) {
+            return Result.error("用户已存在");
+        }
+        log.info("新增用户：{}", userDTO);
+        try {
+            userService.save(userDTO);
+            return Result.success("创建成功");
+        } catch (UserSaveFailedException e) {
+            return Result.error(e.getMessage());
+        }
+    }
+
+
 }

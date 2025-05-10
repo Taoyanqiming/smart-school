@@ -4,17 +4,17 @@
 <mapper namespace="com.sky.mapper.UserMapper">
     <!-- 根据手机号查询用户 -->
     <select id="getByPhone" resultType="com.sky.entity.User">
-        select * from parking.users where phone_number = #{phoneNumber}
+        select * from school.users where phone_number = #{phoneNumber}
     </select>
 
     <!-- 插入用户数据 -->
     <insert id="insert">
-        insert into parking.users ( username, password, phone_number) values (#{username},#{password},#{phoneNumber})
+        insert into school.users ( username, password, phone_number) values (#{username},#{password},#{phoneNumber})
     </insert>
     <!-- 用户分页查询 -->
     <select id="pageQuery" parameterType="com.sky.dto.UserPageQueryDTO" resultType="com.sky.entity.User">
         select *
-        from parking.users
+        from school.users
         <where>
             <if test="username != null and username != ''">
                 and username like concat('%',#{username},'%')
@@ -26,7 +26,7 @@
     </select>
     <!-- 修改用户信息 -->
     <update id="update" parameterType="User">
-        update parking.users
+        update school.users
         <trim prefix="set" suffixOverrides=",">
             <if test="username != null and username != ''">
                 username = #{username},
@@ -53,7 +53,7 @@
     <!--    根据iD查询用户信息-->
     <select id="getById" resultType="com.sky.entity.User">
         select *
-        from parking.users
+        from school.users
         where user_id = #{userId}
     </select>
 </mapper>

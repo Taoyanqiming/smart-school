@@ -1,85 +1,42 @@
 package com.sky.service.impl;
 
-import com.github.pagehelper.Page;
-import com.github.pagehelper.PageHelper;
-import com.sky.dto.FeedBacksDTO;
-import com.sky.dto.FeedBacksPageQueryDTO;
-import com.sky.dto.RepliesDTO;
-import com.sky.entity.Replies;
+import com.sky.dto.CommentDTO;
+import com.sky.dto.LikeCommentDTO;
+import com.sky.dto.LikeDTO;
+import com.sky.entity.Message;
 import com.sky.mapper.MessageMapper;
-import com.sky.mapper.ReplyMapper;
-import com.sky.result.PageResult;
-import com.sky.service.MessageService;
-import com.sky.vo.FeedBacksVO;
+import com.sky.rabbitmq.RabbitMQConfig;
+import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Map;
-
 @Service
-public class MessageServiceImpl implements MessageService {
+public class MessageServiceImpl {
     @Autowired
     private MessageMapper messageMapper;
-    @Autowired
-    private ReplyMapper replyMapper;
-
     /**
-     * 分页查询反馈
-     * @param feedBacksPageQueryDTO
-     * @return
+     * 点赞通知
      */
-    @Override
-    public PageResult getMessageList(FeedBacksPageQueryDTO feedBacksPageQueryDTO){
-        PageHelper.startPage(feedBacksPageQueryDTO.getPage(),feedBacksPageQueryDTO.getPageSize());
-        Page<FeedBacksVO> page = messageMapper.selectFeedbacks(feedBacksPageQueryDTO);
-        long total = page.getTotal();
-        List<FeedBacksVO> records = page.getResult();
-        return new PageResult(total,records);
+    @RabbitListener(queues = RabbitMQConfig.MESSAGE_QUEUE_NAME)
+    public void receiveLikeMessage(Message message) {
+        System.out.println("Received like message: " + message);
+        messageMapper.insert(message);
     }
 
     /**
-     * 回复反馈
-     * @param repliesDTO
-     * @return
+     * 下单通知
      */
-    @Override
-    public void reply(RepliesDTO repliesDTO){
-        replyMapper.insertReplies(repliesDTO);
+    @RabbitListener(queues = RabbitMQConfig.ORDER_QUEUE_NAME)
+    public void receiveOrderMessage(Message message) {
+        System.out.println("Received order message: " + message);
+        // 这里可以添加处理订单消息的逻辑
     }
 
-    /**
-     * 删除反馈信息
-     */
-    @Override
-   public void deleteFeedbacks(Integer feedbackId){
-        messageMapper.deleteFeedback(feedbackId);
-    }
 
-    /**
-     * 删除回复信息
-     */
-    public void deleteReplies(Integer replyId,Integer feedbackId){
-        replyMapper.deleteReplies(replyId,feedbackId);
-    }
 
-    /**
-     * 用户创建反馈信息
-     * @param feedBacksDTO
-     */
-    @Override
-   public void createFeedback(FeedBacksDTO feedBacksDTO){
-       messageMapper.createFeedbacks(feedBacksDTO);
-   }
 
-    /**
-     * 查询回复信息
-     * @param feedbackId
-     * @return
-     */
-    @Override
-    public List<Replies> getReplies( Integer feedbackId){
-        return replyMapper.getReply(feedbackId);
-    }
+
+
+
 
 }
