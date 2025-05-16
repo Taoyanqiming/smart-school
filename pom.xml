@@ -14,9 +14,14 @@
     <version>1.0-SNAPSHOT</version>
     <modules>
         <module>sky-common</module>
-        <module>sky-pojo</module>
-        <module>sky-server</module>
-        <module>sky-parking</module>
+        <module>sky-user-service</module>
+        <module>sky-mall-service</module>
+        <module>sky-forum-service</module>
+        <module>sky-appointment-service</module>
+        <module>sky-message-service</module>
+        <module>sky-order-service</module>
+        <module>sky-gateway</module>
+
     </modules>
     <properties>
         <!-- 统一管理依赖版本 -->
@@ -28,7 +33,7 @@
         <druid.version>1.2.1</druid.version>
         <pagehelper.version>1.3.0</pagehelper.version>
         <aliyun.sdk.oss.version>3.10.2</aliyun.sdk.oss.version>
-        <knife4j.version>3.0.2</knife4j.version>
+        <knife4j.version>3.0.3</knife4j.version>
         <aspectj.version>1.9.4</aspectj.version>
         <jjwt.version>0.9.1</jjwt.version>
         <jaxb-api.version>2.3.1</jaxb-api.version>
