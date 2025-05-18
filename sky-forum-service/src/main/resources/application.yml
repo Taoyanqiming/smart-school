@@ -4,10 +4,13 @@ server:
 spring:
   profiles:
     active: dev
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
   main:
     allow-circular-references: true
   application:
-    name: Service
+    name: ForumService
   cloud:
     nacos:
       discovery:
