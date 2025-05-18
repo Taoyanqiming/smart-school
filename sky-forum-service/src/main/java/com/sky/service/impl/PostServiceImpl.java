@@ -2,6 +2,7 @@ package com.sky.service.impl;
 
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import com.sky.context.BaseContext;
 import com.sky.dto.*;
 import com.sky.entity.*;
 import com.sky.mapper.PostMapper;
@@ -12,6 +13,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
 
 
 /**
@@ -49,8 +54,21 @@ public class PostServiceImpl implements PostService {
         //修改帖子评论数量
         postMapper.updateComment(commentDTO.getPostId(),+1);
 
+        Map<String, Object> contentMap = new HashMap<>();
+        contentMap.put("text", commentDTO.getContent());
+        contentMap.put("linkUrl", "/post/" + commentDTO.getPostId()); // 跳转链接
+
+        MessageDTO messageDTO = MessageDTO.builder()
+                .userId(BaseContext.getCurrentId())
+                .type(1)
+                .sourceModule("commentId")
+                .sourceId(commentDTO.getCommentId())
+                .content(contentMap)
+                .createTime(LocalDateTime.now())
+                .build();
+
         //加入消息队列
-        messageSender.sendMessage(commentDTO);
+        messageSender.sendCommentMessage(messageDTO);
     }
 
     /**
@@ -71,8 +89,20 @@ public class PostServiceImpl implements PostService {
             postMapper.insertLike(likeDTO);
             postMapper.updateLiked(likeDTO.getPostId(), 1);
 
+            Map<String, Object> contentMap = new HashMap<>();
+            contentMap.put("text", "您收到了一条新点赞");
+            contentMap.put("linkUrl", "/post/" + likeDTO.getPostId()); // 跳转链接
+
+            MessageDTO messageDTO = MessageDTO.builder()
+                    .userId(BaseContext.getCurrentId())
+                    .type(2)
+                    .sourceModule("likeId")
+                    .sourceId(likeDTO.getLikeId())
+                    .content(contentMap)
+                    .createTime(LocalDateTime.now())
+                    .build();
             // 直接发送原始DTO到消息队列，类型信息可通过消息头或路由键区分
-            messageSender.sendMessage(likeDTO);
+            messageSender.sendLikeMessage(messageDTO);
         }
     }
 
@@ -92,9 +122,20 @@ public class PostServiceImpl implements PostService {
             // 用户点赞更新数据库
             postMapper.insertCommentLike(likeCommentDTO);
             postMapper.updateLiked(likeCommentDTO.getCommentId(), 1);
+            Map<String, Object> contentMap = new HashMap<>();
+            contentMap.put("text", "您收到了一条新点赞");
+            contentMap.put("linkUrl", "/post/" + likeCommentDTO.getPostId()); // 跳转链接
 
+            MessageDTO messageDTO = MessageDTO.builder()
+                    .userId(BaseContext.getCurrentId())
+                    .type(2)
+                    .sourceModule("likeCommentId")
+                    .sourceId(likeCommentDTO.getLikeCommentId())
+                    .content(contentMap)
+                    .createTime(LocalDateTime.now())
+                    .build();
             // 直接发送原始DTO到消息队列
-            messageSender.sendMessage(likeCommentDTO);
+            messageSender.sendComLikeMessage(messageDTO);
         }
     }
 //    /**
