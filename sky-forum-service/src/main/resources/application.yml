@@ -1,5 +1,5 @@
 server:
-  port: 8083
+  port: 8082
 
 spring:
   profiles:
@@ -10,7 +10,7 @@ spring:
   main:
     allow-circular-references: true
   application:
-    name: ForumService
+    name: forum-service
   cloud:
     nacos:
       discovery:

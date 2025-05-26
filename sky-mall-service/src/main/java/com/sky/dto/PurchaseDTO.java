@@ -16,6 +16,5 @@ public class PurchaseDTO implements Serializable {
 
     private Integer userId;
     private Integer productId;
-    private Integer seckillId;
     private Integer quantity;
 }

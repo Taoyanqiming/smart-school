@@ -22,7 +22,7 @@ public class MessageDTO implements Serializable {
     private Integer type;
     private String sourceModule;
     private Integer sourceId;
-    private Map<String, Object> content;
+    private String content;
     private LocalDateTime createTime;
 
 

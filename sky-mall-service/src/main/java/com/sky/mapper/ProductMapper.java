@@ -2,6 +2,7 @@ package com.sky.mapper;
 
 import com.github.pagehelper.Page;
 
+import com.sky.dto.ProductPageQueryDTO;
 import com.sky.entity.Product;
 import org.apache.ibatis.annotations.Mapper;
 
@@ -12,12 +13,12 @@ import java.util.List;
  */
 @Mapper
 public interface ProductMapper {
-//    /**
-//     * 商品分页查询
-//     * @param productPageQueryDTO
-//     * @return
-//     */
-//    Page<Product> pageQuery(ProductPageQueryDTO productPageQueryDTO);
+    /**
+     * 商品分页查询
+     * @param productPageQueryDTO
+     * @return
+     */
+    Page<Product> pageQuery(ProductPageQueryDTO productPageQueryDTO);
 
     /**
      * 根据商品ID获取商品信息

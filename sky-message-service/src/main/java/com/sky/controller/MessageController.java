@@ -3,6 +3,7 @@ package com.sky.controller;
 import com.sky.dto.SearchDTO;
 import com.sky.dto.UserDTO;
 import com.sky.entity.Message;
+import com.sky.result.PageResult;
 import com.sky.result.Result;
 import com.sky.service.MessageService;
 import io.swagger.annotations.Api;
@@ -12,52 +13,79 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
+// com.sky.controller.MessageController
 @RestController
 @RequestMapping("/user/message")
 @Slf4j
 @Api(tags = "消息模块")
 public class MessageController {
-        @Autowired
-        private MessageService messageService;
-
-
-    /**
-     * 系统消息
-     */
-
+    @Autowired
+    private MessageService messageService;
 
     /**
-     * 1.管理员发送系统通知
+     * 分页查询个人消息
      */
-
-
-    /**
-     * 2.查询个人系统消息
-     */
-    @PostMapping("/search")
-    @ApiOperation("查询个人消息")
-    public List<Message> update(@RequestBody SearchDTO searchDTO) {
-        List<Message> messages = messageService.search(searchDTO);
-        return messages;
+    @GetMapping("/page")
+    @ApiOperation("分页查询个人消息")
+    public Result<PageResult> getMessagePage(
+            @RequestParam(defaultValue = "1") Integer page,
+            @RequestParam(defaultValue = "10") Integer pageSize,
+            @RequestParam(required = false) Integer type,
+            @RequestParam(required = false) Integer isRead
+    ) {
+        PageResult pageResult = messageService.getMessagePage(page, pageSize, type, isRead);
+        return Result.success(pageResult);
     }
 
     /**
-     * 收到的赞
+     * 标记消息为已读
      */
-
+    @PutMapping("/read/{messageId}")
+    @ApiOperation("标记消息为已读")
+    public Result<String> markAsRead(@PathVariable Integer messageId) {
+        messageService.markAsRead(messageId);
+        return Result.success("标记成功");
+    }
 
     /**
-     * 回复我的
+     * 批量标记消息为已读
      */
-
+    @PutMapping("/read/batch")
+    @ApiOperation("批量标记消息为已读")
+    public Result<String> markAsReadBatch(@RequestBody List<Integer> messageIds) {
+        messageService.markAsReadBatch(messageIds);
+        return Result.success("批量标记成功");
+    }
 
     /**
-     * 订单通知
+     * 删除消息
      */
-
+    @DeleteMapping("/{messageId}")
+    @ApiOperation("删除消息")
+    public Result<String> deleteMessage(@PathVariable Integer messageId) {
+        messageService.deleteMessage(messageId);
+        return Result.success("删除成功");
+    }
 
     /**
-     * 预约消息
+     * 获取未读消息数量
      */
+    @GetMapping("/unread/count")
+    @ApiOperation("获取未读消息数量")
+    public Result<Integer> getUnreadCount() {
+        Integer count = messageService.getUnreadCount();
+        return Result.success(count);
+    }
+
+    /**
+     * 按类型分组统计消息数量
+     */
+    @GetMapping("/count/by-type")
+    @ApiOperation("按类型分组统计消息数量")
+    public Result<Map<Integer, Integer>> getCountByType() {
+        Map<Integer, Integer> countMap = messageService.getCountByType();
+        return Result.success(countMap);
+    }
 }

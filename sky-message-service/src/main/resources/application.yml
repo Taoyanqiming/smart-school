@@ -1,13 +1,16 @@
 server:
-  port: 8085
+  port: 8084
 
 spring:
   profiles:
     active: dev
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
   main:
     allow-circular-references: true
   application:
-    name: Service
+    name: message-service
   cloud:
     nacos:
       discovery:
@@ -46,7 +49,7 @@ spring:
 
 
 mybatis:
-  mapper-locations: classpath:mapper/*.xml
+  mapper-locations: classpath:*.xml
   type-aliases-package: com.sky.entity
   configuration:
     map-underscore-to-camel-case: true

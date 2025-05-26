@@ -13,7 +13,6 @@ import java.io.Serializable;
 public class LikeCommentDTO implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    private Integer postId;
     private  Integer likeCommentId;
     private Integer commentId;
     private Integer userId;

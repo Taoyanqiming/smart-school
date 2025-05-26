@@ -15,19 +15,12 @@ public interface PostService {
     void addComment(CommentDTO commentDTO);
 
     void addLike(LikeDTO likeDTO);
-  //  void addFavorite(FavoriteDTO favoriteDTO);
+    void addFavorite(FavoriteDTO favoriteDTO);
     void addLikeComment(LikeCommentDTO likeCommentDTO);
 
+    void deletePost(Integer postId);
 
-//    void addFavorite(FavoriteDTO favoriteDTO);
-
-//    void cancelLike(LikeDTO likeDTO);
-//
-//    void cancelFavorite(FavoriteDTO favoriteDTO);
-//
-//    void deletePost(Integer postId);
-//
-//    void deleteComment(Integer commentId);
+    void deleteComment(Integer commentId);
 
     /**
      * 获取帖子信息
@@ -36,15 +29,12 @@ public interface PostService {
      */
    PostVO getPostById(Integer postId);
 
-//    PageResult getCommentsByPostId(CommentPageQueryDTO commentPageQueryDTO);
+    PageResult getCommentsByPostId(CommentPageQueryDTO commentPageQueryDTO);
 
-//    PageResult getPostsByPage(PostPageQueryDTO postPageQueryDTO);
-//
-//    void addPostTag(PostTags postTags);
-//
-//    PageResult getPostsByTagNames(PostPageQueryDTO postPageQueryDTO);
+    PageResult getPostsByPage(PostPageQueryDTO postPageQueryDTO);
 
- //   void incrementViewCount(Integer postId);
+
+
 
 
 

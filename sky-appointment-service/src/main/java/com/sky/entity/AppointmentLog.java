@@ -5,17 +5,19 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Date;
+import java.io.Serializable;
+import java.time.LocalDateTime;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class AppointmentLog {
-    private Long logId;
-    private Long appointmentId;
-    private Long approverId;
+public class AppointmentLog implements Serializable {
+    private static final long serialVersionUID = 1L;
+    private Integer logId;
+    private Integer appointmentId;
+    private Integer approverId;
     private Integer approveStatus;
-    private Date approveTime;
-    private Date updateTime;
+    private LocalDateTime approveTime;
+    private LocalDateTime updateTime;
 }

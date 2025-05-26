@@ -1,13 +1,16 @@
 server:
-  port: 8084
+  port: 8083
 
 spring:
   profiles:
     active: dev
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
   main:
     allow-circular-references: true
   application:
-    name: Service
+    name: mall-service
   cloud:
     nacos:
       discovery:

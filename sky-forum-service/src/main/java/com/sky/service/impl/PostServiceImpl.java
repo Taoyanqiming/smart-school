@@ -7,6 +7,7 @@ import com.sky.dto.*;
 import com.sky.entity.*;
 import com.sky.mapper.PostMapper;
 import com.sky.rabbitmq.MessageSender;
+import com.sky.result.PageResult;
 import com.sky.service.PostService;
 import com.sky.vo.PostVO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 
@@ -54,16 +56,12 @@ public class PostServiceImpl implements PostService {
         //修改帖子评论数量
         postMapper.updateComment(commentDTO.getPostId(),+1);
 
-        Map<String, Object> contentMap = new HashMap<>();
-        contentMap.put("text", commentDTO.getContent());
-        contentMap.put("linkUrl", "/post/" + commentDTO.getPostId()); // 跳转链接
-
         MessageDTO messageDTO = MessageDTO.builder()
                 .userId(BaseContext.getCurrentId())
                 .type(1)
-                .sourceModule("commentId")
+                .sourceModule("/post/" + commentDTO.getPostId())
                 .sourceId(commentDTO.getCommentId())
-                .content(contentMap)
+                .content(commentDTO.getContent())
                 .createTime(LocalDateTime.now())
                 .build();
 
@@ -89,16 +87,12 @@ public class PostServiceImpl implements PostService {
             postMapper.insertLike(likeDTO);
             postMapper.updateLiked(likeDTO.getPostId(), 1);
 
-            Map<String, Object> contentMap = new HashMap<>();
-            contentMap.put("text", "您收到了一条新点赞");
-            contentMap.put("linkUrl", "/post/" + likeDTO.getPostId()); // 跳转链接
-
             MessageDTO messageDTO = MessageDTO.builder()
                     .userId(BaseContext.getCurrentId())
                     .type(2)
-                    .sourceModule("likeId")
+                    .sourceModule("/post/"+ likeDTO.getPostId())
                     .sourceId(likeDTO.getLikeId())
-                    .content(contentMap)
+                    .content("您收到了一条新点赞")
                     .createTime(LocalDateTime.now())
                     .build();
             // 直接发送原始DTO到消息队列，类型信息可通过消息头或路由键区分
@@ -122,112 +116,86 @@ public class PostServiceImpl implements PostService {
             // 用户点赞更新数据库
             postMapper.insertCommentLike(likeCommentDTO);
             postMapper.updateLiked(likeCommentDTO.getCommentId(), 1);
-            Map<String, Object> contentMap = new HashMap<>();
-            contentMap.put("text", "您收到了一条新点赞");
-            contentMap.put("linkUrl", "/post/" + likeCommentDTO.getPostId()); // 跳转链接
 
             MessageDTO messageDTO = MessageDTO.builder()
                     .userId(BaseContext.getCurrentId())
                     .type(2)
-                    .sourceModule("likeCommentId")
+                    .sourceModule("/post/")
                     .sourceId(likeCommentDTO.getLikeCommentId())
-                    .content(contentMap)
+                    .content("您收到了一条新点赞")
                     .createTime(LocalDateTime.now())
                     .build();
             // 直接发送原始DTO到消息队列
             messageSender.sendComLikeMessage(messageDTO);
         }
     }
-//    /**
-//     * 为指定帖子添加收藏。
-//     *
-//     * @param favoriteDTO 包含收藏信息的数据传输对象
-//     */
-//    @Override
-//    public void addFavorite(FavoriteDTO favoriteDTO) {
-//        //判断是否收藏
-//        postMapper.insertFavorite(favoriteDTO);
-//        postMapper.incrementFavoriteCount(favoriteDTO.getPostId());
-//    }
+    /**
+     * 为指定帖子添加收藏。
+     *
+     * @param favoriteDTO 包含收藏信息的数据传输对象
+     */
+    @Override
+    public void addFavorite(FavoriteDTO favoriteDTO) {
+        //判断是否收藏
+        postMapper.insertFavorite(favoriteDTO);
+        postMapper.incrementFavoriteCount(favoriteDTO.getPostId());
+    }
 
 
 
-//    /**
-//     * 删除指定帖子。
-//     *
-//     * @param postId 要删除的帖子的 ID
-//     */
-//    @Override
-//    public void deletePost(Integer postId) {
-//        postMapper.deletePost(postId);
-//    }
+    /**
+     * 删除指定帖子。
+     *
+     * @param postId 要删除的帖子的 ID
+     */
+    @Override
+    public void deletePost(Integer postId) {
+        postMapper.deletePost(postId);
+    }
 
-//    /**
-//     * 删除指定评论。
-//     *
-//     * @param commentId 要删除的评论的 ID
-//     */
-//    @Override
-//    public void deleteComment(Integer commentId) {
-//        postMapper.deleteComment(commentId);
-//    }
+    /**
+     * 删除指定评论。
+     *
+     * @param commentId 要删除的评论的 ID
+     */
+    @Override
+    public void deleteComment(Integer commentId) {
+        postMapper.deleteComment(commentId);
+    }
 
 
 
-//    /**
-//     * 根据帖子 ID 分页获取评论列表。
-//     *
-//     * @param commentPageQueryDTO 包含分页和查询条件的数据传输对象
-//     * @return 包含评论列表的分页结果对象
-//     */
-//    @Override
-//    public PageResult getCommentsByPostId(CommentPageQueryDTO commentPageQueryDTO) {
-//        PageHelper.startPage(commentPageQueryDTO.getPage(), commentPageQueryDTO.getPageSize());
-//        Page<Comments> page = postMapper.getCommentsByPostId(commentPageQueryDTO);
-//        long total = page.getTotal();
-//        List<Comments> records = page.getResult();
-//        return new PageResult(total, records);
-//    }
+    /**
+     * 根据帖子 ID 分页获取评论列表。
+     *
+     * @param commentPageQueryDTO 包含分页和查询条件的数据传输对象
+     * @return 包含评论列表的分页结果对象
+     */
+    @Override
+    public PageResult getCommentsByPostId(CommentPageQueryDTO commentPageQueryDTO) {
+        PageHelper.startPage(commentPageQueryDTO.getPage(), commentPageQueryDTO.getPageSize());
+        Page<Comments> page = postMapper.getCommentsByPostId(commentPageQueryDTO);
+        long total = page.getTotal();
+        List<Comments> records = page.getResult();
+        return new PageResult(total, records);
+    }
 
-//    /**
-//     * 分页获取所有帖子列表。
-//     *
-//     * @param postPageQueryDTO 包含分页和查询条件的数据传输对象
-//     * @return 包含帖子列表的分页结果对象
-//     */
-//    @Override
-//    public PageResult getPostsByPage(PostPageQueryDTO postPageQueryDTO) {
-//        PageHelper.startPage(postPageQueryDTO.getPage(), postPageQueryDTO.getPageSize());
-//        Page<PostVO> page = postMapper.getPostsByPage(postPageQueryDTO);
-//        long total = page.getTotal();
-//        List<PostVO> records = page.getResult();
-//        return new PageResult(total, records);
-//    }
+    /**
+     * 分页获取所有帖子列表。
+     *
+     * @param postPageQueryDTO 包含分页和查询条件的数据传输对象
+     * @return 包含帖子列表的分页结果对象
+     */
+    @Override
+    public PageResult getPostsByPage(PostPageQueryDTO postPageQueryDTO) {
+        PageHelper.startPage(postPageQueryDTO.getPage(), postPageQueryDTO.getPageSize());
+        Page<PostVO> page = postMapper.getPostsByPage(postPageQueryDTO);
+        long total = page.getTotal();
+        List<PostVO> records = page.getResult();
+        return new PageResult(total, records);
+    }
 
-//    /**
-//     * 为帖子添加标签。
-//     *
-//     * @param postTags 包含帖子和标签关联信息的实体对象
-//     */
-//    @Override
-//    public void addPostTag(PostTags postTags) {
-//        postMapper.insertPostTag(postTags);
-//    }
 
-//    /**
-//     * 根据标签名称分页获取帖子列表。
-//     *
-//     * @param postPageQueryDTO 包含分页和标签查询条件的数据传输对象
-//     * @return 包含帖子列表的分页结果对象
-//     */
-//    @Override
-//    public PageResult getPostsByTagNames(PostPageQueryDTO postPageQueryDTO) {
-//        PageHelper.startPage(postPageQueryDTO.getPage(), postPageQueryDTO.getPageSize());
-//        Page<PostVO> page = postMapper.getPostsByTagNames(postPageQueryDTO);
-//        long total = page.getTotal();
-//        List<PostVO> records = page.getResult();
-//        return new PageResult(total, records);
-//    }
     /**
      * 获取帖子信息
      * @param postId

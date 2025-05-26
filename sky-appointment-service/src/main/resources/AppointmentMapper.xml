@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sky.mapper.AppointmentMapper">
+
+    <insert id="insert"
+            parameterType="com.sky.entity.Appointment"
+            useGeneratedKeys="true"
+            keyProperty="appointmentId"
+            keyColumn="appointment_id">
+        INSERT INTO appointment
+            (user_id, visit_date, visit_reason, status, create_time, update_time)
+        VALUES
+            (#{userId}, #{visitDate}, #{visitReason}, #{status}, #{createTime}, #{updateTime})
+    </insert>
+
+    <update id="update" parameterType="com.sky.entity.Appointment">
+        UPDATE appointment
+        SET
+            user_id = #{userId},
+            visit_date = #{visitDate},
+            visit_reason = #{visitReason},
+            status = #{status},
+            update_time = #{updateTime}
+        WHERE appointment_id = #{appointmentId}
+    </update>
+
+    <select id="getById"
+            parameterType="java.lang.Integer"
+            resultType="com.sky.entity.Appointment">
+        SELECT
+            appointment_id,
+            user_id,
+            visit_date,
+            visit_reason,
+            status,
+            create_time,
+            update_time
+        FROM appointment
+        WHERE appointment_id = #{appointmentId}
+    </select>
+
+    <select id="getByUserId"
+            parameterType="java.lang.Integer">
+        SELECT
+            appointment_id,
+            user_id,
+            visit_date,
+            visit_reason,
+            status,
+            create_time,
+            update_time
+        FROM appointment
+        WHERE user_id = #{userId}
+        ORDER BY create_time DESC
+    </select>
+
+</mapper>

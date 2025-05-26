@@ -33,7 +33,7 @@ public interface PostMapper {
      * 帖子收藏
      * @param favoriteDTO
      */
-    //void insertFavorite(FavoriteDTO favoriteDTO);
+   void insertFavorite(FavoriteDTO favoriteDTO);
     /**
      * 评论点赞
      */
@@ -56,22 +56,11 @@ public interface PostMapper {
     void updateLiked(Integer postId, Integer account);
     void updateComment(Integer postId, Integer account);
     void incrementViewCount(Integer postId);
-
-
     void incrementFavoriteCount(Integer postId);
-
-
-    void deleteFavorite(FavoriteDTO favoriteDTO);
-
     void deletePost(Integer postId);
-
     void deleteComment(Integer commentId);
-    //  void insertPostTag(PostTags postTags);
-    //  List<Tags> getTagsByPostId(Integer postId);
+    Page<Comments> getCommentsByPostId(CommentPageQueryDTO commentPageQueryDTO);
+    Page<PostVO> getPostsByPage(PostPageQueryDTO postPageQueryDTO);
 
-//    Page<PostVO> getPostsByTagNames(PostPageQueryDTO postPageQueryDTO);
-    //   Page<Comments> getCommentsByPostId(CommentPageQueryDTO commentPageQueryDTO);
-
-//    Page<PostVO> getPostsByPage(PostPageQueryDTO postPageQueryDTO);
 
 }

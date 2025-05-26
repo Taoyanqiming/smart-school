@@ -1,6 +1,11 @@
 package com.sky.mapper;
 
+import com.github.pagehelper.Page;
+import com.sky.dto.OrderPageDTO;
+import com.sky.dto.OrderSearchDTO;
+import com.sky.dto.SeckillCreateDTO;
 import com.sky.entity.Order;
+import com.sky.entity.UserSeckillRecord;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.Map;
@@ -41,6 +46,19 @@ public interface OrderMapper {
      * @param orderId 包含订单 ID 和支付状态的参数
      */
     void updatePaymentStatus(Integer orderId);
+
+    /**
+     * 查询订单
+     * @param orderPageDTO
+     * @return
+     */
+    Page<Order> pageQuery(OrderPageDTO orderPageDTO);
+
+    UserSeckillRecord searchOrder(OrderSearchDTO orderSearchDTO);
+
+    void updateSeckill(SeckillCreateDTO seckillCreateDTO);
+
+    void createSeckill(SeckillCreateDTO seckillCreateDTO);
 
 //    /**
 //     * 退款

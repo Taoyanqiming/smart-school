@@ -1,12 +1,13 @@
 package com.sky.controller;
 
-
+import com.sky.dto.ProductPageQueryDTO;
 import com.sky.dto.PurchaseDTO;
-import com.sky.entity.Product;
-import com.sky.entity.SeckillProduct;
+import com.sky.dto.SeckillCreateDTO;
 import com.sky.result.PageResult;
 import com.sky.result.Result;
 import com.sky.service.ProductService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
  */
 @RestController
 @RequestMapping("/mall")
+@Api(tags = "商城商品接口")
 public class MallController {
 
     @Autowired
@@ -23,68 +25,50 @@ public class MallController {
  * 搜索
  */
 
-//    /**
-//     * 展示全部商品
-//     * @return 全部商品列表
-//     */
-//    @GetMapping("/product/list")
-//    public Result<PageResult> getAllProducts(ProductPageQueryDTO productPageQueryDTO) {
-//        PageResult products = productService.pageQuery(productPageQueryDTO);
-//        return Result.success(products);
-//    }
-
-//    /**
-//     * 展示秒杀商品
-//     * @return 秒杀商品列表
-//     */
-//    @GetMapping("/seckill/list")
-//    public Result<PageResult> getSeckillProducts(ProductPageQueryDTO productPageQueryDTO) {
-//        PageResult seckillProducts = productService.getSeckillProducts(productPageQueryDTO);
-//        return Result.success(seckillProducts);
-//    }
-
     /**
-     * 购买商品
-     * @param purchaseDTO 包含用户ID、商品ID、秒杀商品ID（可选）、购买数量
-     * @return 操作结果
+     * 展示全部商品
+     * @return 全部商品列表
      */
-    @PostMapping("/purchase")
-    public Result<String> purchaseProduct(@RequestBody PurchaseDTO purchaseDTO) {
-        boolean success = productService.purchaseProduct(purchaseDTO);
-        if (success) {
-            return Result.success("购买成功");
-        } else {
-            return Result.error("购买失败");
-        }
+    @ApiOperation("分页查询商品列表")
+    @GetMapping("/product/list")
+    public Result<PageResult> getAllProducts( ProductPageQueryDTO productPageQueryDTO) {
+        PageResult products = productService.pageQuery(productPageQueryDTO);
+        return Result.success(products);
     }
 
-//    /**
-//     * 订单退款
-//     * @param orderId 订单ID
-//     * @return 操作结果
-//     */
-//    @PostMapping("/refund/{orderId}")
-//    public Result<String> refundOrder(@PathVariable Integer orderId) {
-//        boolean success = productService.refundOrder(orderId);
-//        if (success) {
-//            return Result.success("退款成功");
-//        } else {
-//            return Result.error("退款失败");
-//        }
-//    }
+    /**
+     * 展示秒杀商品
+     * @return 秒杀商品列表
+     */
+    @ApiOperation("分页查询秒杀商品列表")
+    @GetMapping("/seckill/list")
+    public Result<PageResult> getSeckillProducts(ProductPageQueryDTO productPageQueryDTO) {
+        PageResult seckillProducts = productService.getSeckillProducts(productPageQueryDTO);
+        return Result.success(seckillProducts);
+    }
 
-//    /**
-//     * 模拟支付
-//     * @param orderId 订单ID
-//     * @return 操作结果
-//     */
-//    @PostMapping("/simulatePayment/{orderId}")
-//    public Result<String> simulatePayment(@PathVariable Integer orderId) {
-//        boolean success = productService.simulatePayment(orderId);
-//        if (success) {
-//            return Result.success("支付成功");
-//        } else {
-//            return Result.error("支付失败");
-//        }
-//    }
+    /**
+     * 购买秒杀商品
+     * @param seckillCreateDTO 包含用户ID、秒杀商品ID（可选）、购买数量
+     * @return 操作结果
+     */
+    @ApiOperation("购买秒杀商品")
+    @PostMapping("/purchase/seckill")
+    public Result<String> purchaseProduct(@RequestBody SeckillCreateDTO seckillCreateDTO) {
+        return productService.purchaseProduct(seckillCreateDTO); // 直接返回 Service 的 Result 对象
+    }
+    /**
+     * 购买普通商品
+     * @param purchaseDTO 包含用户ID、秒杀商品ID（可选）、购买数量
+     * @return 操作结果
+     */
+    @ApiOperation("购买普通商品")
+    @PostMapping("/purchase/normal")
+    public Result<String> purchaseProduct(@RequestBody PurchaseDTO purchaseDTO) {
+        productService.purchaseNormalProduct(purchaseDTO);
+        return Result.success();
+    }
+
+
+
 }

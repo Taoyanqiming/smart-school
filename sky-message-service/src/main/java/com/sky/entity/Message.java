@@ -26,7 +26,7 @@ public class Message implements Serializable {
     private Integer type;
     private String sourceModule;
     private Integer sourceId;
-    private Map<String, Object> content;
+    private String content;
     private Integer isRead;
     private LocalDateTime createTime;
     private Integer deleteFlag;

@@ -1,0 +1,90 @@
+server:
+  port: 8090  # 网关端口
+spring:
+  application:
+    name: gateway-service  # 应用名称
+  main:
+    web-application-type: reactive
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration  # 排除数据源自动配置
+      - org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration  # 可选：排除JPA配置
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true # 开启服务发现路由
+          lower-case-service-id: true # 服务名转小写（默认驼峰，根据 Nacos 注册情况调整）
+      routes:
+        # ---------------------- 用户服务 ----------------------
+        - id: user-service-route
+          uri: lb://user-service
+          predicates:
+            - Path=/api/user/**,/user/**
+          filters:
+            - RewritePath=/api/user/(?<segment>.*), /$\{segment}
+
+        # ---------------------- 订单服务 ----------------------
+        - id: order-service-route
+          uri: lb://order-service
+          predicates:
+            - Path=/api/order/**,/order/**
+          filters:
+            - RewritePath=/api/order/(?<segment>.*), /$\{segment}
+            - StripPrefix=1 # 去除1级前缀
+
+        # ---------------------- 消息服务 ----------------------
+        - id: message-service-route
+          uri: lb://message-service
+          predicates:
+            - Path=/api/message/**,/message/**
+          filters:
+            - RewritePath=/api/message/(?<segment>.*), /$\{segment}
+            - AddResponseHeader=X-From-Service, message-service # 添加响应头标识
+
+        # ---------------------- 商城服务 ----------------------
+        - id: mall-service-route
+          uri: lb://mall-service
+          predicates:
+            - Path=/api/mall/**,/mall/**
+          filters:
+            - RewritePath=/api/mall/(?<segment>.*), /$\{segment}
+
+        # ---------------------- 论坛服务 ----------------------
+        - id: forum-service-route
+          uri: lb://forum-service
+          predicates:
+            - Path=/api/forum/**,/forum/**
+          filters:
+            - RewritePath=/api/forum/(?<segment>.*), /$\{segment}
+            # 删除了 - Cors 过滤器配置
+        # ---------------------- 预约服务 ----------------------
+        - id: appoint-service-route
+          uri: lb://appoint-service # 服务名需与注册中心（如Nacos）中的服务名一致
+          predicates:
+            - Path=/api/appoint/**,/appoint/** # 匹配以 /api/appoint/ 或 /appoint/ 开头的路径
+          filters:
+            - RewritePath=/api/appoint/(?<segment>.*), /$\{segment} # 重写路径，去除前缀 /api/appoint/
+
+      globalcors: # 全局跨域配置（保留）
+        cors-configurations:
+          '[/**]':
+            allowedOrigins: "*" # 允许所有前端域名（生产环境改为具体域名）
+            allowedMethods: "*"
+            allowedHeaders: "*"
+            allowCredentials: false
+            maxAge: 3600 # 跨域有效期（秒）
+    nacos:
+      discovery:
+        server-addr: localhost:8848  # Nacos服务地址
+
+# 日志配置
+logging:
+  level:
+    org.springframework.cloud.gateway: DEBUG
+
+sky:
+  jwt:
+    secret-key: haha
+    ttl: 86400000
+    token-name: Authorization

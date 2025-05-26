@@ -1,0 +1,60 @@
+server:
+  port: 8085
+
+spring:
+  profiles:
+    active: dev
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+  main:
+    allow-circular-references: true
+  application:
+    name: order-service
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 127.0.0.1:8848 # Nacos 服务器地址，根据实际情况修改
+
+  datasource:
+#    druid:
+      driver-class-name: ${sky.datasource.driver-class-name}
+      url: jdbc:mysql://${sky.datasource.host}:${sky.datasource.port}/${sky.datasource.database}?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&useSSL=false&allowPublicKeyRetrieval=true
+      username: ${sky.datasource.username}
+      password: ${sky.datasource.password}
+#      initial-size: 5            # 初始连接数
+#      min-idle: 5                # 最小空闲连接数
+#      max-active: 20             # 最大活跃连接数
+#      max-wait: 160000            # 获取连接时最大等待时间（毫秒）
+#      validation-query: SELECT 1  # 连接校验查询
+#      test-on-borrow: true       # 借用连接时进行有效性检查
+#      test-while-idle: true      # 空闲时进行有效性检查
+#      time-between-eviction-runs-millis: 60000 # 定期检查空闲连接的时间（毫秒）
+#      min-evictable-idle-time-millis: 300000 # 空闲连接的最小可回收时间（毫秒）
+
+  redis:
+    host: ${sky.redis.host}
+    port: ${sky.redis.port}
+    password: ${sky.redis.password}
+    database: ${sky.redis.database}
+
+mybatis:
+  mapper-locations: classpath:*.xml
+  type-aliases-package: com.sky.entity
+  configuration:
+    map-underscore-to-camel-case: true
+
+logging:
+  level:
+    com:
+      sky:
+        mapper: debug
+        service: info
+        controller: info
+
+sky:
+  jwt:
+    secret-key: haha
+    ttl: 86400000
+    token-name: Authorization
+

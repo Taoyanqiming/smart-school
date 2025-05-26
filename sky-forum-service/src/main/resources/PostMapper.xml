@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sky.mapper.PostMapper">
+
+    <!-- 基础查询结果映射 -->
+    <resultMap id="BaseResultMap" type="com.sky.vo.PostVO">
+        <id column="post_id" property="postId" jdbcType="BIGINT" />
+        <result column="user_id" property="userId" jdbcType="BIGINT" />
+        <result column="title" property="title" jdbcType="VARCHAR" />
+        <result column="images" property="images" jdbcType="VARCHAR" />
+        <result column="content" property="content" jdbcType="VARCHAR" />
+        <result column="liked" property="liked" jdbcType="INTEGER" />
+        <result column="view" property="view" jdbcType="INTEGER" />
+        <result column="comment" property="comment" jdbcType="INTEGER" />
+        <result column="favorite" property="favorite" jdbcType="INTEGER" />
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    </resultMap>
+
+    <!-- 新增帖子 -->
+    <insert id="insertPost" parameterType="com.sky.dto.PostDTO">
+        INSERT INTO school.post (user_id, title, content, create_time, update_time)
+        VALUES (#{userId}, #{title}, #{content}, NOW(), NOW())
+    </insert>
+
+    <!-- 新增评论 -->
+    <insert id="insertComment" parameterType="com.sky.dto.CommentDTO">
+        INSERT INTO school.comments (post_id, user_id, parent_id, answer_id, content, create_time)
+        VALUES (#{postId}, #{userId}, #{parentId}, #{answerId}, #{content}, NOW())
+    </insert>
+
+    <!-- 新增帖子点赞 -->
+    <insert id="insertLike" parameterType="com.sky.dto.LikeDTO">
+        INSERT INTO school.likes (post_id, user_id, create_time)
+        VALUES (#{postId}, #{userId}, NOW())
+    </insert>
+
+    <!-- 新增帖子收藏 -->
+    <insert id="insertFavorite" parameterType="com.sky.dto.FavoriteDTO">
+        INSERT INTO school.favorites (post_id, user_id, create_time)
+        VALUES (#{postId}, #{userId}, NOW())
+    </insert>
+
+    <!-- 新增评论点赞 -->
+    <insert id="insertCommentLike" parameterType="com.sky.dto.LikeCommentDTO">
+        INSERT INTO school.comment_likes (likeCommentId, comment_id, user_id, create_time)
+        VALUES (#{likeCommentId}, #{commentId}, #{userId}, NOW())
+    </insert>
+
+    <!-- 取消帖子点赞 -->
+    <delete id="deleteLiked" parameterType="com.sky.dto.LikeDTO">
+        DELETE FROM school.likes
+        WHERE post_id = #{postId} AND user_id = #{userId}
+    </delete>
+
+    <!-- 取消评论点赞 -->
+    <delete id="deleteCommentLiked" parameterType="com.sky.dto.LikeCommentDTO">
+        DELETE FROM school.comment_likes
+        WHERE likeCommentId = #{likeCommentId} AND comment_id = #{commentId} AND user_id = #{userId}
+    </delete>
+
+    <!-- 根据ID查询帖子 -->
+    <select id="getPostById" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+        SELECT * FROM school.post WHERE post_id = #{postId}
+    </select>
+
+    <!-- 查询用户是否已点赞帖子 -->
+    <select id="isLiked" resultType="com.sky.entity.Likes" parameterType="com.sky.dto.LikeDTO">
+        SELECT * FROM school.likes
+        WHERE post_id = #{postId} AND user_id = #{userId}
+    </select>
+
+    <!-- 查询用户是否已点赞评论 -->
+    <select id="isCommentLiked" resultType="com.sky.entity.Likes" parameterType="com.sky.dto.LikeCommentDTO">
+        SELECT * FROM school.comment_likes
+        WHERE likeCommentId = #{likeCommentId} AND comment_id = #{commentId} AND user_id = #{userId}
+    </select>
+
+    <!-- 更新帖子点赞数 -->
+    <update id="updateLiked" parameterType="map">
+        UPDATE school.post
+        SET liked = liked + #{account}
+        WHERE post_id = #{postId}
+    </update>
+
+    <!-- 更新帖子评论数 -->
+    <update id="updateComment" parameterType="map">
+        UPDATE school.post
+        SET comment = comment + #{account}
+        WHERE post_id = #{postId}
+    </update>
+
+    <!-- 增加帖子浏览量 -->
+    <update id="incrementViewCount" parameterType="java.lang.Integer">
+        UPDATE school.post
+        SET view = view + 1
+        WHERE post_id = #{postId}
+    </update>
+
+    <!-- 增加帖子收藏数 -->
+    <update id="incrementFavoriteCount" parameterType="java.lang.Integer">
+        UPDATE school.post
+        SET favorite = favorite + 1
+        WHERE post_id = #{postId}
+    </update>
+
+    <!-- 删除帖子 -->
+    <delete id="deletePost" parameterType="java.lang.Integer">
+        DELETE FROM school.post WHERE post_id = #{postId}
+    </delete>
+
+    <!-- 删除评论 -->
+    <delete id="deleteComment" parameterType="java.lang.Integer">
+        DELETE FROM school.comments WHERE comment_id = #{commentId}
+    </delete>
+
+    <!-- 分页查询帖子评论 -->
+    <select id="getCommentsByPostId" resultType="com.sky.entity.Comments" parameterType="com.sky.dto.CommentPageQueryDTO">
+        SELECT * FROM school.comments
+        WHERE post_id = #{postId}
+        ORDER BY create_time DESC
+        LIMIT #{offset}, #{pageSize}
+    </select>
+
+    <!-- 分页查询帖子列表 -->
+    <select id="getPostsByPage" resultMap="BaseResultMap" parameterType="com.sky.dto.PostPageQueryDTO">
+        SELECT * FROM school.post
+        WHERE 1=1
+        <if test="keyword != null and keyword != ''">
+            AND (title LIKE CONCAT('%', #{keyword}, '%')
+            OR content LIKE CONCAT('%', #{keyword}, '%'))
+        </if>
+        <if test="startDate != null">
+            AND create_time >= #{startDate}
+        </if>
+        <if test="endDate != null">
+            AND create_time &lt;= #{endDate}
+        </if>
+        <choose>
+            <when test="sortType == 'newest'">
+                ORDER BY create_time DESC
+            </when>
+            <when test="sortType == 'hottest'">
+                ORDER BY (liked + view + comment + favorite) DESC
+            </when>
+            <otherwise>
+                ORDER BY create_time DESC
+            </otherwise>
+        </choose>
+        LIMIT #{offset}, #{pageSize}
+    </select>
+
+    <!-- 查询帖子总数 -->
+    <select id="getTotal" resultType="java.lang.Long" parameterType="com.sky.dto.PostPageQueryDTO">
+        SELECT COUNT(*) FROM school.post
+        WHERE 1=1
+        <if test="keyword != null and keyword != ''">
+            AND (title LIKE CONCAT('%', #{keyword}, '%')
+            OR content LIKE CONCAT('%', #{keyword}, '%'))
+        </if>
+        <if test="startDate != null">
+            AND create_time >= #{startDate}
+        </if>
+        <if test="endDate != null">
+            AND create_time &lt;= #{endDate}
+        </if>
+    </select>
+
+</mapper>
