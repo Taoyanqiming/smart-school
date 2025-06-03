@@ -4,6 +4,7 @@ package com.sky.mapper;
 import com.github.pagehelper.Page;
 import com.sky.entity.User;
 import com.sky.dto.UserPageQueryDTO;
+import com.sky.vo.UserVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -39,5 +40,5 @@ public interface UserMapper {
     void update(User user);
 
 
-
+    UserVO select(Integer userId);
 }

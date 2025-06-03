@@ -21,7 +21,7 @@ public class User implements Serializable {
     private String username;
     private String password;
     private String email;
-    private Integer role; // 'admin'1 or 'user'0
+    private String role; // 'admin' or 'user'
     private String icon;
 
     //@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")

@@ -1,15 +1,18 @@
 package com.sky.mapper;
 
+import com.sky.annotation.AutoFill;
 import com.sky.dto.*;
-import com.sky.entity.Comments;
-import com.sky.entity.Likes;
-import com.sky.entity.Posts;
+import com.sky.entity.*;
 
 import com.github.pagehelper.Page;
+import com.sky.enumeration.OperationType;
+import com.sky.vo.CommentsVO;
 import com.sky.vo.PostVO;
+import com.sky.vo.PostViewVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Mapper
@@ -18,49 +21,81 @@ public interface PostMapper {
      * 发帖
      * @param postDTO
      */
+    @AutoFill(OperationType.INSERT)
     void insertPost(PostDTO postDTO);
     /**
      * 发布评论
-     * @param commentDTO
+     * @param comments
      */
-    void insertComment(CommentDTO commentDTO);
+    @AutoFill(OperationType.INSERT)
+    void insertComment(Comments comments);
     /**
      * 帖子点赞
-     * @param likeDTO
+     * @param likes
      */
-    void insertLike(LikeDTO likeDTO);
+    @AutoFill(OperationType.INSERT_CREATE_ONLY)
+    void insertLike(Likes likes);
     /**
      * 帖子收藏
-     * @param favoriteDTO
+     * @param favorites
      */
-   void insertFavorite(FavoriteDTO favoriteDTO);
+    @AutoFill(OperationType.INSERT_CREATE_ONLY)
+    void insertFavorite(Favorites favorites);
     /**
      * 评论点赞
      */
-    void insertCommentLike(LikeCommentDTO likeCommentDTO);
+    @AutoFill(OperationType.INSERT_CREATE_ONLY)
+    void insertCommentLike(CommentLikes commentLikes);
     /**
      * 取消点赞
      * @param likeDTO
      */
-   void deleteLiked(LikeDTO likeDTO);
+    void deleteLiked(LikeDTO likeDTO);
     void deleteCommentLiked(LikeCommentDTO likeCommentDTO);
+    void deletePost(Integer postId);
+    void deleteComment(Integer commentId);
+    void deleteFavor(FavoriteDTO favoriteDTO);
     /**
      * 查询是否存在
      */
-    PostVO getPostById(Integer postId);
+
     Likes isLiked(LikeDTO likeDTO);
-    Likes isCommentLiked(LikeCommentDTO likeCommentDTO);
+    CommentLikes isCommentLiked(LikeCommentDTO likeCommentDTO);
+    Favorites isFavor(FavoriteDTO favoriteDTO);
     /**
-     * 修改值
+     * 修改帖子点赞数量
      */
-    void updateLiked(Integer postId, Integer account);
-    void updateComment(Integer postId, Integer account);
+    void updateLiked(@Param("postId")Integer postId, @Param("account")Integer account);
+    void updateCommnetLiked(@Param("commentId")Integer commentId, @Param("account")Integer account);
+    /**
+     * 修改帖子评论数量
+     * @param postId
+     * @param account
+     */
+    void updateComment(@Param("postId")Integer postId, @Param("account")Integer account);
     void incrementViewCount(Integer postId);
-    void incrementFavoriteCount(Integer postId);
-    void deletePost(Integer postId);
-    void deleteComment(Integer commentId);
-    Page<Comments> getCommentsByPostId(CommentPageQueryDTO commentPageQueryDTO);
+    /**
+     * 修改帖子收藏数量
+     * @param postId
+     */
+    void incrementFavoriteCount(@Param("postId")Integer postId,@Param("account")Integer account);
+
+    /**
+     * 查询
+     * @param postId
+     * @return
+     */
+    Posts getPostById(Integer postId);
+    Page<CommentsVO> pageQueryByPostId(CommentPageQueryDTO queryDTO);
     Page<PostVO> getPostsByPage(PostPageQueryDTO postPageQueryDTO);
 
+    /**
+     * 查询一个评论的全部信息
+     * @param commentId
+     * @return
+     */
+    Comments selectComment(Integer commentId);
 
+    // Java接口
+    List<PostViewVO> getTopPostsByViewToday(LocalDateTime todayStart, LocalDateTime todayEnd);
 }

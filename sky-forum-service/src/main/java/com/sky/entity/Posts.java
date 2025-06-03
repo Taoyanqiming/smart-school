@@ -25,6 +25,7 @@ public class Posts implements Serializable {
     private String content;
 
     private LocalDateTime createTime;
+    private LocalDateTime updateTime;
 
     private Integer view;
 
@@ -33,7 +34,6 @@ public class Posts implements Serializable {
 
     private Integer favorite;
 
-    private boolean isLiked ;
-    private boolean isFavorited ;
+
 
 }

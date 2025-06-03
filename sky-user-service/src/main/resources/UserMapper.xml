@@ -56,4 +56,25 @@
         from school.users
         where user_id = #{userId}
     </select>
+
+    <select id="select" resultType="com.sky.vo.UserVO">
+        SELECT
+            u.user_id,
+            u.phone_number,
+            u.password,
+            u.username,
+            u.email,
+            u.role,
+            d.birthday,
+            d.sex,
+            d.real_name,
+            d.id_card,
+            d.address
+        FROM
+            school.Users u
+                JOIN
+            school.details d ON u.user_id = d.user_id
+        WHERE
+            u.user_id = #{userId}
+    </select>
 </mapper>

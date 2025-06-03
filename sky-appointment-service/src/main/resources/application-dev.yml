@@ -14,7 +14,7 @@ sky:
     database: 10
 
   rabbitmq:
-    host: 192.168.200.135
+    host: 192.168.200.137
     port: 5672
     username: user
     password: user

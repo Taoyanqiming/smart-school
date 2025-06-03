@@ -1,4 +1,4 @@
-package com.sky.config;
+package com.sky.config; // 注意包路径为微服务专属
 
 import com.github.xiaoymin.knife4j.spring.annotations.EnableKnife4j;
 import org.springframework.context.annotation.Bean;
@@ -14,25 +14,25 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @Configuration
 @EnableSwagger2
 @EnableKnife4j
-public class Knife4jConfig {
+public class SwaggerConfig {
 
     @Bean
     public Docket userApi() {
         return new Docket(DocumentationType.SWAGGER_2)
-                .groupName("用户端接口")
+                .groupName("用户服务接口")
                 .apiInfo(apiInfo())
                 .select()
-                // 扫描com.sky.controller包下的所有控制器
-                .apis(RequestHandlerSelectors.basePackage("com.sky.controller"))
+                // 扫描本服务的控制器包
+                .apis(RequestHandlerSelectors.basePackage("com.sky.user.controller"))
                 .paths(PathSelectors.any())
                 .build();
     }
 
     private ApiInfo apiInfo() {
         return new ApiInfoBuilder()
-                .title("用户服务接口文档")
+                .title("用户服务 API 文档")
                 .version("1.0")
-                .description("用户端接口文档")
+                .description("用户服务接口说明")
                 .build();
     }
 }

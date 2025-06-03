@@ -1,10 +1,12 @@
 package com.sky.mapper;
 
 import com.github.pagehelper.Page;
-import com.sky.dto.MessageDTO;
-import com.sky.dto.SearchDTO;
+import com.sky.annotation.AutoFill;
+import com.sky.dto.GetMessDTO;
 import com.sky.entity.Message;
+import com.sky.enumeration.OperationType;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 import java.util.Map;
@@ -13,21 +15,22 @@ import java.util.Map;
 public interface MessageMapper {
     /**
      * 收到通知
-     * @param messageDTO
+     * @param message
      */
-    void insert(MessageDTO messageDTO);
+    @AutoFill(OperationType.INSERT_CREATE_ONLY)
+    void insert(Message message);
 
     /**
      * 根据条件查询消息列表
-     * @param searchDTO 查询条件
+     * @param getMessDTO 查询条件
      * @return 消息列表
      */
-    List<Message> find(SearchDTO searchDTO);
+    Page<Message> getMessagePage(GetMessDTO getMessDTO);
 
-    Page<Message> getMessagePage(Integer type, Integer isRead);
-    void updateReadStatus(Integer messageId, Integer isRead);
-    void updateReadStatusBatch(List<Integer> messageIds, Integer isRead);
-    void updateDeleteFlag(Integer messageId, Integer deleteFlag);
-    Integer getUnreadCount();
-    Map<Integer, Integer> getCountByType();
+    void updateReadStatusBatch(@Param("list") List<Integer> messageIds,
+                               @Param("isRead") Integer isRead);
+    void updateDeleteFlag(Integer messageId);
+    Map<Integer, Integer> getUnreadCount(@Param("userId") Integer userId);
+
+    Map<Integer, Integer> getCountByType(@Param("userId") Integer userId);
 }

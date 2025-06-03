@@ -2,6 +2,7 @@ package com.sky.service;
 
 import com.sky.dto.AppointmentDTO;
 import com.sky.entity.Appointment;
+import com.sky.result.PageResult;
 
 import java.util.List;
 
@@ -10,7 +11,7 @@ public interface AppointmentService {
      * 用户提交预约申请
      * @param appointmentDTO 预约信息
      */
-    void submit(AppointmentDTO appointmentDTO);
+    Integer submit(AppointmentDTO appointmentDTO);
 
     /**
      * 修改预约信息
@@ -27,11 +28,11 @@ public interface AppointmentService {
     void approve(Integer appointmentId, Integer status, Integer approverId);
 
     /**
-     * 根据用户ID查询预约记录
-     * @param userId 用户ID
+     * 根据条件查询预约记录
+     * @param appointmentDTO
      * @return 预约列表
      */
-    List<Appointment> getByUserId(Integer userId);
+    List<Appointment> getByUserId(AppointmentDTO appointmentDTO);
 
     /**
      * 根据ID查询预约

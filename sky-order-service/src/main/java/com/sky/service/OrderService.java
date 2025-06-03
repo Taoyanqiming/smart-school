@@ -1,8 +1,6 @@
 package com.sky.service;
 
-import com.sky.dto.OrderPageDTO;
-import com.sky.dto.OrderSearchDTO;
-import com.sky.dto.SeckillCreateDTO;
+import com.sky.dto.*;
 import com.sky.entity.Order;
 import com.sky.entity.UserSeckillRecord;
 import com.sky.result.PageResult;
@@ -27,4 +25,17 @@ public interface OrderService {
      * @param seckillCreateDTO
      */
     void updateSeckill(SeckillCreateDTO seckillCreateDTO);
+
+    /**
+     * 更新订单状态
+     * @param orderStatusDTO
+     */
+    void updateOrderStatus(OrderStatusDTO orderStatusDTO);
+
+    /**
+     * 查看订单详情
+     * @param orderId
+     * @return
+     */
+    Order findOrder(Integer orderId);
 }

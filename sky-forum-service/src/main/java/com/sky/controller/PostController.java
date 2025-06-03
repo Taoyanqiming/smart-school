@@ -1,27 +1,38 @@
 package com.sky.controller;
 
 import com.sky.dto.*;
+import com.sky.dto.CommentDTO;
+import com.sky.entity.Favorites;
+import com.sky.entity.Likes;
+import com.sky.entity.Posts;
+import com.sky.mapper.PostMapper;
 import com.sky.result.PageResult;
 import com.sky.result.Result;
 import com.sky.service.PostService;
+import com.sky.vo.PostDetailsVO;
 import com.sky.vo.PostVO;
+import com.sky.vo.PostViewVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 /**
  * 帖子相关操作的控制器
  */
 @RestController
-@RequestMapping("/post")
+@RequestMapping("/forum")
 @Api(tags = "帖子相关接口")
 public class PostController {
 
     @Autowired
     private PostService postService;
+    @Autowired
+    private PostMapper postMapper;
 
     /**
      * 添加帖子
@@ -58,17 +69,18 @@ public class PostController {
         postService.addLike(likeDTO);
         return Result.success("点赞成功");
     }
+
     /**
      * 评论点赞
      * @param likeCommentDTO
      */
-
     @PostMapping("/comment/like/add")
     @ApiOperation("新增评论点赞")
     public Result<String> addLike(@RequestBody LikeCommentDTO likeCommentDTO) {
         postService.addLikeComment(likeCommentDTO);
         return Result.success("点赞成功");
     }
+
     /**
      * 添加收藏
      * @param favoriteDTO 收藏信息传输对象
@@ -80,7 +92,6 @@ public class PostController {
         postService.addFavorite(favoriteDTO);
         return Result.success("收藏成功");
     }
-
 
     /**
      * 删除帖子（前提是属于用户发布）
@@ -113,10 +124,26 @@ public class PostController {
      */
     @GetMapping("/{postId}")
     @ApiOperation("根据帖子ID获取帖子信息")
-    public Result<PostVO> getPostById(@PathVariable Integer postId) {
-        PostVO postVO = postService.getPostById(postId);
+    public Result<PostDetailsVO> getPostById(@PathVariable Integer postId, HttpServletRequest request) {
+        Posts posts = postService.getPostById(postId);
 
-        return Result.success(postVO);
+        LikeDTO likeDTO = LikeDTO.builder()
+                .postId(postId)
+                .userId(Integer.valueOf( request.getHeader("X-User-Id")))
+                .build();
+        Likes Liked = postMapper.isLiked(likeDTO);
+        FavoriteDTO favoriteDTO = new FavoriteDTO();
+        BeanUtils.copyProperties(likeDTO,favoriteDTO);
+        Favorites favorites = postMapper.isFavor(favoriteDTO);
+        PostDetailsVO postDetailsVO = new PostDetailsVO();
+        BeanUtils.copyProperties(posts,postDetailsVO);
+        if(Liked != null){
+            postDetailsVO.setUserIsLiked(true);
+        }
+        if(favorites != null){
+            postDetailsVO.setUserIsFavorited(true);
+        }
+        return Result.success(postDetailsVO);
     }
 
     /**
@@ -124,24 +151,35 @@ public class PostController {
      * @param commentPageQueryDTO 评论分页查询数据传输对象
      * @return 评论分页结果
      */
-    @GetMapping("/comments")
+    @PostMapping("/comments")
     @ApiOperation("根据帖子ID分页获取评论列表")
     public Result<PageResult> getCommentsByPostId(@RequestBody CommentPageQueryDTO commentPageQueryDTO) {
         PageResult pageResult = postService.getCommentsByPostId(commentPageQueryDTO);
         return Result.success(pageResult);
     }
 
-
     /**
      * 首页分页展示所有帖子
      * @param postPageQueryDTO 帖子分页查询数据传输对象
      * @return 帖子分页结果
      */
-    @GetMapping("/list")
+    @PostMapping("/list")
     @ApiOperation("首页分页展示所有帖子")
     public Result<PageResult> getPostsByPage(@RequestBody PostPageQueryDTO postPageQueryDTO) {
         PageResult pageResult = postService.getPostsByPage(postPageQueryDTO);
         return Result.success(pageResult);
     }
+
+    /**
+     * 获取当天 view 字段最多的前 10 个帖子
+     * @return 返回包含帖子列表的分页结果
+     */
+    @GetMapping("/top/view")
+    @ApiOperation("返回当日view最多的前10个帖子")
+    public Result<List<PostViewVO>> getTopPostsByViewToday() {
+        List<PostViewVO> topPosts = postService.getTopPostsByViewToday();
+        return Result.success(topPosts);
+    }
+
 
 }

@@ -15,7 +15,7 @@ public class UserSeckillRecord implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private Integer recordId;
+    private String recordId;
     private Integer userId;
     private Integer seckillId;
     private Integer purchaseQuantity;

@@ -20,7 +20,7 @@ spring:
         - id: user-service-route
           uri: lb://user-service
           predicates:
-            - Path=/api/user/**,/user/**
+            - Path=/api/user/**,/user/**,/message-service/v2/api-docs,/message-service/v3/api-docs
           filters:
             - RewritePath=/api/user/(?<segment>.*), /$\{segment}
 
@@ -28,7 +28,7 @@ spring:
         - id: order-service-route
           uri: lb://order-service
           predicates:
-            - Path=/api/order/**,/order/**
+            - Path=/api/order/**,/order/**,/message-service/v2/api-docs,/message-service/v3/api-docs
           filters:
             - RewritePath=/api/order/(?<segment>.*), /$\{segment}
             - StripPrefix=1 # 去除1级前缀
@@ -37,7 +37,7 @@ spring:
         - id: message-service-route
           uri: lb://message-service
           predicates:
-            - Path=/api/message/**,/message/**
+            - Path=/api/message/**,/message/**,/message-service/v2/api-docs,/message-service/v3/api-docs
           filters:
             - RewritePath=/api/message/(?<segment>.*), /$\{segment}
             - AddResponseHeader=X-From-Service, message-service # 添加响应头标识
@@ -46,7 +46,7 @@ spring:
         - id: mall-service-route
           uri: lb://mall-service
           predicates:
-            - Path=/api/mall/**,/mall/**
+            - Path=/api/mall/**,/mall/**,/message-service/v2/api-docs,/message-service/v3/api-docs
           filters:
             - RewritePath=/api/mall/(?<segment>.*), /$\{segment}
 
@@ -54,7 +54,7 @@ spring:
         - id: forum-service-route
           uri: lb://forum-service
           predicates:
-            - Path=/api/forum/**,/forum/**
+            - Path=/api/forum/**,/forum/**,/message-service/v2/api-docs,/message-service/v3/api-docs
           filters:
             - RewritePath=/api/forum/(?<segment>.*), /$\{segment}
             # 删除了 - Cors 过滤器配置
@@ -62,7 +62,7 @@ spring:
         - id: appoint-service-route
           uri: lb://appoint-service # 服务名需与注册中心（如Nacos）中的服务名一致
           predicates:
-            - Path=/api/appoint/**,/appoint/** # 匹配以 /api/appoint/ 或 /appoint/ 开头的路径
+            - Path=/api/appoint/**,/appoint/**,/message-service/v2/api-docs,/message-service/v3/api-docs
           filters:
             - RewritePath=/api/appoint/(?<segment>.*), /$\{segment} # 重写路径，去除前缀 /api/appoint/
 

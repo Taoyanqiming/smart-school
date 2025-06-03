@@ -1,4 +1,4 @@
-package com.sky.dto;
+package com.sky.vo;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -7,23 +7,18 @@ import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.Map;
-
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class MessageDTO implements Serializable {
+public class PostViewVO implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private Integer userId;
-    private Integer type;
-    private String sourceModule;
-    private Integer sourceId;
-    private String content;
+    private Integer postId;
+    private String title;
     private LocalDateTime createTime;
-
+    private Integer view;
 
 }

@@ -20,13 +20,16 @@ public class PostVO implements Serializable {
 
     private Integer postId;
     private Integer userId;
+    private String userName;
+    private String icon;
     private String title;
+    private String images;
     private String content;
     private LocalDateTime createTime;
-    private Integer viewCount;
-    private Integer likeCount;
-    private Integer favoriteCount;
-    private boolean isLiked;
-    private boolean isFavorited;
+    private LocalDateTime updateTime;
+    private Integer view;
+    private Integer liked;
+    private Integer favorite;
+
 
 }

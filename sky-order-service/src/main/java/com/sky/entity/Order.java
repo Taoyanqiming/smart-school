@@ -18,15 +18,14 @@ public class Order implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private Integer orderId;
+    private String  orderId;
     private Integer userId;
     private Integer productId;
     private Integer seckillId;
     private Integer orderQuantity;
     private BigDecimal orderPrice;
     private String orderStatus;
-    private LocalDateTime orderTime;
+    private LocalDateTime createTime;
     private LocalDateTime paymentTime;
-    private LocalDateTime paymentDeadline;
-    private String paymentStatus;
+
 }

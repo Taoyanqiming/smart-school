@@ -9,6 +9,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 
+
 @EnableTransactionManagement //开启注解方式的事务管理
 @Slf4j
 @EnableCaching
@@ -19,4 +20,5 @@ public class ForumApplication {
         SpringApplication.run(ForumApplication.class, args);
         log.info("server started");
     }
+
 }

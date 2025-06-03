@@ -1,9 +1,6 @@
 package com.sky.rabbitmq;
 
-import com.sky.dto.CommentDTO;
-import com.sky.dto.LikeCommentDTO;
-import com.sky.dto.LikeDTO;
-import com.sky.dto.MessageDTO;
+import com.sky.entity.MessageDTO;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

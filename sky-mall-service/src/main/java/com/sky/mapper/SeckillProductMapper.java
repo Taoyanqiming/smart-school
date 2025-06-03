@@ -41,4 +41,10 @@ public interface SeckillProductMapper {
      * @return 影响行数
      */
     int increaseSeckillStock(Integer seckillId, Integer quantity);
+
+    /**
+     * 管理员创建秒杀商品
+     * @param seckillProduct
+     */
+    void insertSeck(SeckillProduct seckillProduct);
 }

@@ -16,8 +16,11 @@ public class CommentDTO implements Serializable {
     private static final long serialVersionUID = 1L;
     private Integer commentId;
     private Integer postId;
+    //评论人
     private Integer userId;
     private Integer parentId;
     private Integer answerId;
     private String content;
+
+
 }

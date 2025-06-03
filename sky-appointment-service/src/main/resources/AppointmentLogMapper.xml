@@ -3,7 +3,7 @@
 <mapper namespace="com.sky.mapper.AppointmentLogMapper">
 
     <insert id="insert" parameterType="com.sky.entity.AppointmentLog">
-        INSERT INTO appointment_log
+        INSERT INTO school.appointment_log
         (appointment_id, approver_id, approve_status, approve_time, update_time)
         VALUES
             (#{appointmentId}, #{approverId}, #{approveStatus}, #{approveTime}, #{updateTime})

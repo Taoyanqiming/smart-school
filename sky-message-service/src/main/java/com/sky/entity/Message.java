@@ -23,6 +23,8 @@ public class Message implements Serializable {
 
     private Integer messageId;
     private Integer userId;
+    private Integer sender;
+    //0系统消息，1回复消息，2点赞消息，3订单消息
     private Integer type;
     private String sourceModule;
     private Integer sourceId;

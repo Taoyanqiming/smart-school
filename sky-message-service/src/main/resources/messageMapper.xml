@@ -2,42 +2,33 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.sky.mapper.MessageMapper">
 
-<insert id="insert" parameterType="com.sky.dto.MessageDTO">
-        INSERT INTO school.messages
-        <trim prefix="(" suffix=")" suffixOverrides=",">
-            <if test="userId != null">user_id,</if>
-            <if test="type != null">type,</if>
-            <if test="sourceModule != null">source_module,</if>
-            <if test="sourceId != null">source_id,</if>
-            <if test="content != null">content,</if>
-            <if test="createTime != null">create_time,</if>
-        </trim>
-        <trim prefix="VALUES (" suffix=")" suffixOverrides=",">
-            <if test="userId != null">#{userId},</if>
-            <if test="type != null">#{type},</if>
-            <if test="sourceModule != null">#{sourceModule},</if>
-            <if test="sourceId != null">#{sourceId},</if>
-            <if test="content != null">#{content},</if>
-            <if test="createTime != null">#{createTime, jdbcType=TIMESTAMP},</if>
-        </trim>
+    <insert id="insert" parameterType="com.sky.entity.Message">
+        INSERT INTO school.messages (
+            user_id,
+            sender,
+            type,
+            source_module,
+            source_id,
+            content,
+            create_time
+        )
+        VALUES (
+                   #{userId},
+                   #{sender},
+                   #{type},
+                   #{sourceModule},
+                   #{sourceId},
+                   #{content},
+                   #{createTime}
+               )
     </insert>
     <!-- 分页查询消息 -->
-    <select id="getMessagePage" resultType="com.sky.entity.Message">
+    <select id="getMessagePage" resultType="com.sky.entity.Message" parameterType="com.sky.dto.GetMessDTO">
         SELECT * FROM school.messages
-        WHERE delete_flag = 0
-        <if test="type != null">
-            AND type = #{type}
-        </if>
-        <if test="isRead != null">
-            AND is_read = #{isRead}
-        </if>
+        WHERE delete_flag = 0 and user_id = #{userId} and type = #{type}
         ORDER BY create_time DESC
     </select>
 
-    <!-- 更新消息状态 -->
-    <update id="updateReadStatus">
-        UPDATE school.messages SET is_read = #{isRead} WHERE message_id = #{messageId}
-    </update>
 
     <!-- 批量更新消息状态 -->
     <update id="updateReadStatusBatch">
@@ -50,19 +41,27 @@
     </update>
 
     <!-- 逻辑删除消息 -->
-    <update id="updateDeleteFlag">
-        UPDATE school.messages SET delete_flag = #{deleteFlag} WHERE message_id = #{messageId}
+    <update id="updateDeleteFlag" parameterType="java.lang.Integer">
+        UPDATE school.messages SET delete_flag = 1 WHERE message_id = #{messageId}
     </update>
 
     <!-- 查询未读消息数量 -->
-    <select id="getUnreadCount" resultType="java.lang.Integer">
-        SELECT COUNT(*) FROM school.messages WHERE is_read = 0 AND delete_flag = 0
+    <select id="getUnreadCount" resultType="java.util.HashMap">
+        SELECT
+            type AS messageType,
+            COUNT(*) AS count
+        FROM school.messages
+        WHERE
+            user_id = #{userId}
+          AND is_read = 0
+          AND delete_flag = 0
+        GROUP BY type
     </select>
 
     <!-- 按类型统计消息数量 -->
     <select id="getCountByType" resultType="java.util.HashMap">
         SELECT type, COUNT(*) as count FROM school.messages
-        WHERE delete_flag = 0
+        WHERE delete_flag = 0 and user_id = #{userId}
         GROUP BY type
     </select>
 </mapper>

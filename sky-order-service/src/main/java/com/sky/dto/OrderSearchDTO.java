@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class OrderSearchDTO {
+
     private Integer userId;
     private Integer productId;
     private Integer seckillId;

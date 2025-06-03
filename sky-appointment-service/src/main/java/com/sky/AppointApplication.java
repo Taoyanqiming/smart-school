@@ -1,6 +1,6 @@
 package com.sky;
 
-import com.sky.context.BaseContext;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -20,9 +20,5 @@ public class AppointApplication {
         SpringApplication.run(AppointApplication.class, args);
         log.info("server started");
     }
-    // 注册过滤器，将请求头信息存入ThreadLocal
-    @Bean
-    public WebFilter baseContextFilter() {
-        return BaseContext.createHeaderFilter();
-    }
+
 }

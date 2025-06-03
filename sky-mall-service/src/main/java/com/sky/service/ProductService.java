@@ -1,9 +1,7 @@
 package com.sky.service;
 
 
-import com.sky.dto.ProductPageQueryDTO;
-import com.sky.dto.PurchaseDTO;
-import com.sky.dto.SeckillCreateDTO;
+import com.sky.dto.*;
 import com.sky.entity.Product;
 import com.sky.entity.SeckillProduct;
 import com.sky.result.PageResult;
@@ -37,4 +35,38 @@ public interface ProductService {
 
     void purchaseNormalProduct(PurchaseDTO purchaseDTO);
 
+    /**
+     * 创建普通产品
+     * @param productDTO
+     * @return
+     */
+    Result<Integer> createProduct(ProductCreateDTO productDTO);
+
+    /**
+     * 创建秒杀商品
+     * @param seckSetDTO
+     * @return
+     */
+    Result<String> publishSeckillProduct(SeckSetDTO seckSetDTO);
+
+    /**
+     * 获取单个秒杀商品详情
+     * @param seckillId
+     * @return
+     */
+    SeckillProduct getSeckillProductById(Integer seckillId);
+
+    /**
+     * 修改普通库存
+     * @param productId
+     * @param account
+     */
+    void updateRepertory(Integer productId, Integer account);
+    void updateSecRepertory(Integer seckillId, Integer account);
+    /**
+     * 获取单个product详情
+     * @param productId
+     * @return
+     */
+    Product getProductById(Integer productId);
 }

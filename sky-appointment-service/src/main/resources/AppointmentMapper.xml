@@ -7,16 +7,15 @@
             useGeneratedKeys="true"
             keyProperty="appointmentId"
             keyColumn="appointment_id">
-        INSERT INTO appointment
-            (user_id, visit_date, visit_reason, status, create_time, update_time)
+        INSERT INTO school.appointment
+            (user_id, visit_date, visit_reason, status,create_time,update_time)
         VALUES
-            (#{userId}, #{visitDate}, #{visitReason}, #{status}, #{createTime}, #{updateTime})
+            (#{userId}, #{visitDate}, #{visitReason}, #{status},#{createTime},#{updateTime})
     </insert>
 
     <update id="update" parameterType="com.sky.entity.Appointment">
-        UPDATE appointment
+        UPDATE school.appointment
         SET
-            user_id = #{userId},
             visit_date = #{visitDate},
             visit_reason = #{visitReason},
             status = #{status},
@@ -33,25 +32,29 @@
             visit_date,
             visit_reason,
             status,
-            create_time,
-            update_time
-        FROM appointment
+            create_time
+        FROM school.appointment
         WHERE appointment_id = #{appointmentId}
     </select>
 
-    <select id="getByUserId"
-            parameterType="java.lang.Integer">
+    <select id="getAppoint" parameterType="com.sky.dto.AppointmentDTO" resultType="com.sky.vo.AppointVO">
         SELECT
-            appointment_id,
-            user_id,
-            visit_date,
-            visit_reason,
-            status,
-            create_time,
-            update_time
-        FROM appointment
-        WHERE user_id = #{userId}
-        ORDER BY create_time DESC
+        a.*,
+        u.username,
+        u.phone_number AS phoneNumber
+        FROM school.appointment a
+        JOIN users u ON a.user_id = u.user_id
+        WHERE a.user_id = #{userId}
+        <if test="status != null">
+            AND a.status = #{status}
+        </if>
+        <if test="visitDate != null">
+            AND a.visit_date = #{visitDate}
+        </if>
+        <if test="visitReason != null and visitReason != ''">
+            AND a.visit_reason LIKE CONCAT('%', #{visitReason}, '%')
+        </if>
+        ORDER BY a.create_time DESC
     </select>
 
 </mapper>

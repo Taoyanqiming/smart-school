@@ -15,7 +15,7 @@ public interface OrderFeignService { // 注意：这里应该是interface而不�
     /**
      * 查询订单
      */
-    @GetMapping("/order/search")
+    @PostMapping("/order/search")
     UserSeckillRecord searchOrders(OrderSearchDTO orderSearchDTO); // 添加分号;
 
     @PostMapping("/order/create/seckill")

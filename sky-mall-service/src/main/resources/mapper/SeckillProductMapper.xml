@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sky.mapper.SeckillProductMapper">
+
+    <!-- 分页查询秒杀商品 -->
+    <select id="pageQuery" resultMap="com.sky.entity.SeckillProduct" parameterType="com.sky.dto.ProductPageQueryDTO">
+        SELECT * FROM school.seckill_products
+        <where>
+            <if test="startTime != null">
+                AND seckill_start_time &gt;= #{startTime}
+            </if>
+            <if test="endTime != null">
+                AND seckill_end_time &lt;= #{endTime}
+            </if>
+        </where>
+
+    </select>
+
+    <!-- 根据秒杀ID查询详情 -->
+    <select id="getSeckillProductById" resultType="com.sky.entity.SeckillProduct" parameterType="java.lang.Integer">
+        SELECT *
+        FROM school.seckill_products
+        WHERE seckill_id = #{seckillId}
+    </select>
+
+    <!-- 扣减秒杀库存（乐观锁：检查库存是否足够） -->
+    <update id="decreaseSeckillStock">
+        UPDATE school.seckill_products
+        SET seckill_stock = seckill_stock - #{quantity}
+        WHERE seckill_id = #{seckillId}
+        AND seckill_stock &gt;= #{quantity} <!-- 防止超卖 -->
+    </update>
+
+    <!-- 退货增加秒杀库存 -->
+    <update id="increaseSeckillStock">
+        UPDATE school.seckill_products
+        SET seckill_stock = seckill_stock + #{quantity}
+        WHERE seckill_id = #{seckillId}
+    </update>
+</mapper>

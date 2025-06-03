@@ -3,6 +3,7 @@ package com.sky.mapper;
 import com.github.pagehelper.Page;
 import com.sky.dto.OrderPageDTO;
 import com.sky.dto.OrderSearchDTO;
+import com.sky.dto.OrderStatusDTO;
 import com.sky.dto.SeckillCreateDTO;
 import com.sky.entity.Order;
 import com.sky.entity.UserSeckillRecord;
@@ -21,19 +22,7 @@ public interface OrderMapper {
      * @param order 订单信息
      */
     void insertOrder(Order order);
-//
-//    /**
-//     * 取消订单
-//     * @param params 包含订单 ID 的参数
-//     */
-//    void cancelOrder(Map<String, Object> params);
-//
-//    /**
-//     * 获取超时未支付的订单
-//     * @return 超时未支付的订单列表
-//     */
-//    List<Order> getExpiredUnpaidOrders();
-//
+
     /**
      * 根据订单 ID 查询订单
      * @param orderId 订单 ID
@@ -41,11 +30,6 @@ public interface OrderMapper {
      */
     Order getOrderById(Integer orderId);
 
-    /**
-     * 订单支付
-     * @param orderId 包含订单 ID 和支付状态的参数
-     */
-    void updatePaymentStatus(Integer orderId);
 
     /**
      * 查询订单
@@ -60,9 +44,15 @@ public interface OrderMapper {
 
     void createSeckill(SeckillCreateDTO seckillCreateDTO);
 
-//    /**
-//     * 退款
-//     * @param params 包含订单 ID 的参数
-//     */
-//    void refundOrder(Map<String, Object> params);
+    /**
+     * 更新订单状态
+     * @param orderStatusDTO
+     */
+    void updateStatus(OrderStatusDTO orderStatusDTO);
+
+    /**
+     * 查询所有未支付订单
+     * @return
+     */
+    List<Order> findAll();
 }

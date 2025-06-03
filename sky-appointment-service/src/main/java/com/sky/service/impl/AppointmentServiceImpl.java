@@ -1,6 +1,6 @@
 package com.sky.service.impl;
 
-import com.sky.context.BaseContext;
+import com.github.pagehelper.PageHelper;
 import com.sky.dto.AppointmentDTO;
 import com.sky.dto.MessageDTO;
 import com.sky.entity.Appointment;
@@ -8,8 +8,8 @@ import com.sky.entity.AppointmentLog;
 import com.sky.mapper.AppointmentLogMapper;
 import com.sky.mapper.AppointmentMapper;
 import com.sky.rabbitmq.appointSender;
+import com.sky.result.PageResult;
 import com.sky.service.AppointmentService;
-import com.sky.utils.RabbitMQConfig;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -17,9 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 @Service
@@ -41,29 +39,35 @@ public class AppointmentServiceImpl implements AppointmentService {
     private static final String APPOINTMENT_KEY_PREFIX = "appointment:";
     private static final String USER_APPOINTMENTS_KEY_PREFIX = "user_appointments:";
 
+    /**
+     * 创建
+     * @param appointmentDTO 预约信息
+     */
     @Override
     @Transactional
-    public void submit(AppointmentDTO appointmentDTO) {
+    public Integer submit(AppointmentDTO appointmentDTO) {
         Appointment appointment = new Appointment();
         BeanUtils.copyProperties(appointmentDTO, appointment);
         appointment.setStatus(0); // 初始状态为待审批
-        appointment.setCreateTime(LocalDateTime.now());
-        appointment.setUpdateTime(LocalDateTime.now());
         appointmentMapper.insert(appointment);
 
         MessageDTO messageDTO = MessageDTO.builder()
-                .userId(appointmentDTO.getUserId())
-                .type(5)
+                .receiver(appointmentDTO.getUserId())
+                .type(4)
                 .sourceModule("/api/appointment/" + appointmentDTO.getAppointmentId())
                 .sourceId(appointment.getAppointmentId())
                 .content("您已成功预约")
-                .createTime(LocalDateTime.now())
                 .build();
         appointSendersl.sendAppointmentMessage(messageDTO);
         // 清除用户预约缓存
         clearUserAppointmentsCache(appointment.getUserId());
+        return appointment.getAppointmentId();
     }
 
+
+    /**
+     * 更新
+     */
     @Override
     @Transactional
     public void update(AppointmentDTO appointmentDTO) {
@@ -76,10 +80,7 @@ public class AppointmentServiceImpl implements AppointmentService {
         if (appointment.getStatus() != 0) {
             throw new RuntimeException("只有待审批状态的预约可以修改");
         }
-
         BeanUtils.copyProperties(appointmentDTO, appointment);
-        appointment.setUpdateTime(LocalDateTime.now());
-
         appointmentMapper.update(appointment);
 
         // 清除缓存
@@ -87,6 +88,12 @@ public class AppointmentServiceImpl implements AppointmentService {
         clearUserAppointmentsCache(appointment.getUserId());
     }
 
+    /**
+     * 审批
+     * @param appointmentId 预约ID
+     * @param status 审核状态
+     * @param approverId 审核人ID
+     */
     @Override
     @Transactional
     public void approve(Integer appointmentId, Integer status, Integer approverId) {
@@ -110,11 +117,10 @@ public class AppointmentServiceImpl implements AppointmentService {
         appointmentLogMapper.insert(log);
 
         MessageDTO messageDTO = MessageDTO.builder()
-                .userId(appointment.getUserId())
+                .receiver(appointment.getUserId())
                 .type(5)
                 .sourceModule("/api/appointment/" + appointmentId)
                 .sourceId(appointmentId)
-                .createTime(LocalDateTime.now())
                 .build();
         appointSendersl.sendAppointmentMessage(messageDTO);
         // 发送消息通知用户
@@ -132,14 +138,16 @@ public class AppointmentServiceImpl implements AppointmentService {
     }
 
     @Override
-    public List<Appointment> getByUserId(Integer userId) {
-        String key = USER_APPOINTMENTS_KEY_PREFIX + userId;
-        List<Appointment> appointments = (List<Appointment>) redisTemplate.opsForValue().get(key);
+    public List<Appointment> getByUserId(AppointmentDTO appointmentDTO) {
+        //Integer id = appointmentDTO.getUserId();
+        //String key = USER_APPOINTMENTS_KEY_PREFIX + id;
+        //List<Appointment> appointments = (List<Appointment>) redisTemplate.opsForValue().get(key);
 
-        if (appointments == null) {
-            appointments = appointmentMapper.getByUserId(userId);
-            redisTemplate.opsForValue().set(key, appointments, 30, TimeUnit.MINUTES);
-        }
+       // if (appointments == null) {
+        List<Appointment>   appointments = appointmentMapper.getAppoint(appointmentDTO);
+        System.out.println(appointments);
+            //redisTemplate.opsForValue().set(key, appointments, 30, TimeUnit.MINUTES);
+       // }
 
         return appointments;
     }

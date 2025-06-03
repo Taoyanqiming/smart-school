@@ -1,11 +1,11 @@
 package com.sky.service;
 
 import com.sky.dto.*;
-import com.sky.entity.Comments;
+import com.sky.dto.CommentDTO;
 import com.sky.entity.Posts;
 import com.sky.result.PageResult;
-import com.sky.result.Result;
 import com.sky.vo.PostVO;
+import com.sky.vo.PostViewVO;
 
 import java.util.List;
 
@@ -27,13 +27,13 @@ public interface PostService {
      * @param postId
      * @return
      */
-   PostVO getPostById(Integer postId);
+    Posts getPostById(Integer postId);
 
     PageResult getCommentsByPostId(CommentPageQueryDTO commentPageQueryDTO);
 
     PageResult getPostsByPage(PostPageQueryDTO postPageQueryDTO);
 
-
+    List<PostViewVO> getTopPostsByViewToday();
 
 
 

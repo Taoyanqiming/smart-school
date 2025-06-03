@@ -18,12 +18,10 @@ public class MessageDTO implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private Integer userId;
+    private Integer receiver;
+    //0系统消息，1回复消息，2点赞消息，3订单消息,4预约消息
     private Integer type;
     private String sourceModule;
     private Integer sourceId;
     private String content;
-    private LocalDateTime createTime;
-
-
 }

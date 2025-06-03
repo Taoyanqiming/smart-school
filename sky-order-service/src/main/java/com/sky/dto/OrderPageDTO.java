@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class OrderPageDTO {
+    private Integer userId;
     private int page;
     private  int pageSize;
 }

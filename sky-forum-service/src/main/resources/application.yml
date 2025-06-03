@@ -1,5 +1,5 @@
 server:
-  port: 8082
+  port: 8088
 
 spring:
   profiles:
@@ -49,7 +49,7 @@ spring:
 
 
 mybatis:
-  mapper-locations: classpath:mapper/*.xml
+  mapper-locations: classpath:*.xml
   type-aliases-package: com.sky.entity
   configuration:
     map-underscore-to-camel-case: true

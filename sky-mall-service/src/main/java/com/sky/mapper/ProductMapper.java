@@ -4,6 +4,7 @@ import com.github.pagehelper.Page;
 
 import com.sky.dto.ProductPageQueryDTO;
 import com.sky.entity.Product;
+import com.sky.entity.SeckillProduct;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
@@ -42,4 +43,11 @@ public interface ProductMapper {
      * @return 影响行数
      */
     int increaseProductStock(Integer productId, Integer quantity);
+
+    /**
+     * 管理员创建普通商品
+     * @param product
+     */
+    void insert(Product product);
+
 }

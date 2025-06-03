@@ -19,11 +19,12 @@ public class Comments implements Serializable {
     private Integer commentId;
     private Integer postId;
     private Integer userId;
-    private Integer parent_id;
-    private Integer answer_id;
+    private Integer parentId;
+    private Integer answerId;
     private Integer liked;
     private Integer status;
     private String content;
     private LocalDateTime createTime;
+    private LocalDateTime updateTime;
 
 }

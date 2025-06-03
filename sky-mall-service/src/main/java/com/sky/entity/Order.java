@@ -17,7 +17,7 @@ public class Order implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private Integer orderId;
+    private String orderId;
     private Integer userId;
     private Integer productId;
     private Integer seckillId;
@@ -26,6 +26,5 @@ public class Order implements Serializable {
     private String orderStatus;
     private LocalDateTime orderTime;
     private LocalDateTime paymentTime;
-    private LocalDateTime paymentDeadline;
-    private String paymentStatus;
+
 }

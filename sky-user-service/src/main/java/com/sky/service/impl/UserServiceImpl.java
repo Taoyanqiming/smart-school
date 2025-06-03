@@ -14,6 +14,7 @@ import com.sky.mapper.UserMapper;
 import com.sky.result.PageResult;
 import com.sky.result.Result;
 import com.sky.service.UserService;
+import com.sky.vo.UserVO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -97,6 +98,10 @@ public class UserServiceImpl implements UserService {
         userMapper.update(user);
     }
 
+
+    public UserVO select(Integer userId){
+        return userMapper.select(userId);
+    }
 
 
 }

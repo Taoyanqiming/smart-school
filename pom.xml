@@ -143,7 +143,11 @@
                 <artifactId>wechatpay-apache-httpclient</artifactId>
                 <version>${wechatpay-apache-httpclient.version}</version>
             </dependency> -->
-
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-gateway-starter</artifactId>
+                <version>${spring-cloud.version}</version>
+            </dependency>
             <dependency>
                 <groupId>org.springframework.cloud</groupId>
                 <artifactId>spring-cloud-dependencies</artifactId>

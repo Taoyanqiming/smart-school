@@ -5,6 +5,7 @@ import com.sky.dto.UserLoginDTO;
 import com.sky.dto.UserPageQueryDTO;
 import com.sky.entity.User;
 import com.sky.result.PageResult;
+import com.sky.vo.UserVO;
 
 public interface UserService {
     /**
@@ -38,4 +39,5 @@ public interface UserService {
      */
     void update(UserDTO userDTO);
 
+    UserVO select(Integer userId);
 }

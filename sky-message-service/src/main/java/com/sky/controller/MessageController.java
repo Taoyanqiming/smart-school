@@ -1,8 +1,6 @@
 package com.sky.controller;
 
-import com.sky.dto.SearchDTO;
-import com.sky.dto.UserDTO;
-import com.sky.entity.Message;
+import com.sky.dto.GetMessDTO;
 import com.sky.result.PageResult;
 import com.sky.result.Result;
 import com.sky.service.MessageService;
@@ -12,12 +10,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Map;
 
-// com.sky.controller.MessageController
 @RestController
-@RequestMapping("/user/message")
+@RequestMapping("/message")
 @Slf4j
 @Api(tags = "消息模块")
 public class MessageController {
@@ -25,29 +23,15 @@ public class MessageController {
     private MessageService messageService;
 
     /**
-     * 分页查询个人消息
+     * 分页查询消息
      */
-    @GetMapping("/page")
+    @PostMapping("/page")
     @ApiOperation("分页查询个人消息")
-    public Result<PageResult> getMessagePage(
-            @RequestParam(defaultValue = "1") Integer page,
-            @RequestParam(defaultValue = "10") Integer pageSize,
-            @RequestParam(required = false) Integer type,
-            @RequestParam(required = false) Integer isRead
-    ) {
-        PageResult pageResult = messageService.getMessagePage(page, pageSize, type, isRead);
+    public Result<PageResult> getMessagePage(@RequestBody GetMessDTO getMessDTO) {
+        PageResult pageResult = messageService.getMessagePage(getMessDTO);
         return Result.success(pageResult);
     }
 
-    /**
-     * 标记消息为已读
-     */
-    @PutMapping("/read/{messageId}")
-    @ApiOperation("标记消息为已读")
-    public Result<String> markAsRead(@PathVariable Integer messageId) {
-        messageService.markAsRead(messageId);
-        return Result.success("标记成功");
-    }
 
     /**
      * 批量标记消息为已读
@@ -74,8 +58,9 @@ public class MessageController {
      */
     @GetMapping("/unread/count")
     @ApiOperation("获取未读消息数量")
-    public Result<Integer> getUnreadCount() {
-        Integer count = messageService.getUnreadCount();
+    public Result<Map<Integer, Integer>> getUnreadCount(HttpServletRequest request) {
+        Integer userId = Integer.valueOf( request.getHeader("X-User-Id"));
+        Map<Integer, Integer> count = messageService.getUnreadCount(userId);
         return Result.success(count);
     }
 
@@ -84,8 +69,9 @@ public class MessageController {
      */
     @GetMapping("/count/by-type")
     @ApiOperation("按类型分组统计消息数量")
-    public Result<Map<Integer, Integer>> getCountByType() {
-        Map<Integer, Integer> countMap = messageService.getCountByType();
+    public Result<Map<Integer, Integer>> getCountByType(HttpServletRequest request) {
+        Integer userId = Integer.valueOf( request.getHeader("X-User-Id"));
+        Map<Integer, Integer> countMap = messageService.getCountByType(userId);
         return Result.success(countMap);
     }
 }
