@@ -1,5 +1,5 @@
 server:
-  port: 8082
+  port: 8092
 
 spring:
   profiles:
@@ -40,13 +40,11 @@ spring:
   redis:
     host: ${sky.redis.host}
     port: ${sky.redis.port}
-    password: ${sky.redis.password}
     database: ${sky.redis.database}
 
 #      config:
 #        server-addr: 127.0.0.1:8848 # Nacos 服务器地址，根据实际情况修改
 #        file-extension: yaml
-
 
 mybatis:
   mapper-locations: classpath:*.xml
@@ -68,3 +66,6 @@ sky:
     ttl: 86400000
     token-name: Authorization
 
+springfox:
+  documentation:
+    enabled: false

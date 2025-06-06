@@ -1,16 +1,11 @@
 package com.sky.controller;
 
-import com.sky.dto.ProductPageQueryDTO;
-import com.sky.dto.PurchaseDTO;
-import com.sky.dto.SeckillCreateDTO;
+import com.sky.dto.*;
 import com.sky.entity.Product;
 import com.sky.entity.SeckillProduct;
 import com.sky.result.PageResult;
 import com.sky.result.Result;
 import com.sky.service.ProductService;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.models.auth.In;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,7 +14,6 @@ import org.springframework.web.bind.annotation.*;
  */
 @RestController
 @RequestMapping("/mall")
-@Api(tags = "商城商品接口")
 public class MallController {
 
     @Autowired
@@ -29,9 +23,8 @@ public class MallController {
      * 展示全部商品
      * @return 全部商品列表
      */
-    @ApiOperation("分页查询商品列表")
-    @GetMapping("/product/list")
-    public Result<PageResult> getAllProducts( ProductPageQueryDTO productPageQueryDTO) {
+    @PostMapping("/product/list")
+    public Result<PageResult> getAllProducts(@RequestBody ProductPageQueryDTO productPageQueryDTO) {
         PageResult products = productService.pageQuery(productPageQueryDTO);
         return Result.success(products);
     }
@@ -40,28 +33,26 @@ public class MallController {
      * 展示秒杀商品
      * @return 秒杀商品列表
      */
-    @ApiOperation("分页查询秒杀商品列表")
-    @GetMapping("/seckill/list")
-    public Result<PageResult> getSeckillProducts(ProductPageQueryDTO productPageQueryDTO) {
-        PageResult seckillProducts = productService.getSeckillProducts(productPageQueryDTO);
+    @PostMapping("/seckill/list")
+    public Result<PageResult> getSeckillProducts(@RequestBody SeckillPageQueryDTO PageQueryDTO) {
+        PageResult seckillProducts = productService.getSeckillProducts(PageQueryDTO);
         return Result.success(seckillProducts);
     }
 
     /**
      * 获取单个秒杀商品全部信息
      */
-    @ApiOperation("分页查询秒杀商品列表")
     @GetMapping("/seckill/info")
-    public Result<SeckillProduct> getSeckillProducts(Integer seckillId) {
+    public Result<SeckillProduct> getSeckillProducts(@RequestParam Integer seckillId) {
         SeckillProduct seckillProduct = productService.getSeckillProductById(seckillId);
         return Result.success(seckillProduct);
     }
+
     /**
      * 获取单个普通商品全部信息
      */
-    @ApiOperation("分页查询秒杀商品列表")
     @GetMapping("/product/info")
-    public Result<Product> getProduct(Integer productId) {
+    public Result<Product> getProduct(@RequestParam Integer productId) {
         Product product = productService.getProductById(productId);
         return Result.success(product);
     }
@@ -69,19 +60,18 @@ public class MallController {
     /**
      * 扣减普通库存
      */
-    @ApiOperation("分页查询秒杀商品列表")
-    @PutMapping("/product/update")
-    public Result updateProducts(Integer productId, Integer account) {
-       productService.updateRepertory(productId,account);
+    @PutMapping("/decrease/product")
+    public Result decreaseRepor(@RequestParam Integer seckillId,@RequestParam Integer productId,@RequestParam Integer account) {
+       productService.decreaseRepertory(seckillId,productId,account);
         return Result.success();
     }
+
     /**
      * 修改限时秒杀商品库存，用于退货
      */
-    @ApiOperation("分页查询秒杀商品列表")
-    @PutMapping("/seckill/update")
-    public Result updateSecProducts(Integer seckillId, Integer account) {
-        productService.updateSecRepertory(seckillId,account);
+    @PutMapping("/return/product")
+    public Result ReturnRepor(@RequestParam Integer seckillId,@RequestParam Integer productId,@RequestParam Integer account) {
+        productService.increaseRepertory(seckillId,productId,account);
         return Result.success();
     }
 
@@ -90,7 +80,6 @@ public class MallController {
      * @param seckillCreateDTO 包含用户ID、秒杀商品ID（可选）、购买数量
      * @return 操作结果
      */
-    @ApiOperation("购买秒杀商品")
     @PostMapping("/purchase/seckill")
     public Result<String> purchaseProduct(@RequestBody SeckillCreateDTO seckillCreateDTO) {
         return productService.purchaseProduct(seckillCreateDTO); // 直接返回 Service 的 Result 对象
@@ -100,13 +89,29 @@ public class MallController {
      * @param purchaseDTO 包含用户ID、秒杀商品ID（可选）、购买数量
      * @return 操作结果
      */
-    @ApiOperation("购买普通商品")
     @PostMapping("/purchase/normal")
     public Result<String> purchaseSecProduct(@RequestBody PurchaseDTO purchaseDTO) {
         productService.purchaseNormalProduct(purchaseDTO);
         return Result.success();
     }
 
-
+    /**
+     * 创建普通商品
+     * @param productCreateDTO 包含用户ID、秒杀商品ID（可选）、购买数量
+     * @return 操作结果
+     */
+    @PostMapping("/product/create")
+    public Result<String> purchaseProduct(@RequestBody ProductCreateDTO productCreateDTO) {
+        productService.createProduct(productCreateDTO);
+        return Result.success();
+    }
+    /**
+     * 设置限时秒杀
+     */
+    @PostMapping("/product/set")
+    public Result<String> seckProduct(@RequestBody SeckSetDTO seckSetDTO) {
+        productService.publishSeckillProduct(seckSetDTO);
+        return Result.success();
+    }
 
 }

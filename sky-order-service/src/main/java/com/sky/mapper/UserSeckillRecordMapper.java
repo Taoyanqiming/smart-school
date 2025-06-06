@@ -1,5 +1,6 @@
 package com.sky.mapper;
 
+import com.sky.dto.SeckillCreateDTO;
 import com.sky.entity.UserSeckillRecord;
 import org.apache.ibatis.annotations.Mapper;
 
@@ -18,17 +19,11 @@ public interface UserSeckillRecordMapper {
 
     /**
      * 插入用户秒杀记录
-     * @param userId    用户ID
-     * @param seckillId 秒杀商品ID
-     * @param quantity  购买数量
-     */
-    void insertRecord(Integer userId, Integer seckillId, Integer quantity);
 
-    /**
-     * 更新用户秒杀记录
-     * @param userId    用户ID
-     * @param seckillId 秒杀商品ID
-     * @param quantity  购买数量
      */
-    void updateRecord(Integer userId, Integer seckillId, Integer quantity);
+    void insertRecord(SeckillCreateDTO seckillCreateDTO);
+
+
+
+
 }

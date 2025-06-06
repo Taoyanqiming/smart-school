@@ -18,11 +18,11 @@
                 AND product_name LIKE CONCAT('%', #{productName}, '%')
             </if>
         </where>
-        <!-- PageHelper 自动处理分页参数 -->
+
     </select>
 
     <!-- 根据商品ID查询 -->
-    <select id="getProductById" resultMap="com.sky.entity.Product"
+    <select id="getProductById" resultType="com.sky.entity.Product"
             parameterType="java.lang.Integer">
         SELECT * FROM school.products
         WHERE product_id = #{productId}
@@ -31,24 +31,28 @@
     <!-- 扣减库存（乐观锁示例：通过库存版本号或直接更新库存） -->
     <update id="decreaseProductStock">
         UPDATE school.products
+        SET product_stock = product_stock - #{quantity}
+        WHERE product_id = #{productId}
+        AND product_stock &gt;= #{quantity} <!-- 防止超卖 -->
+    </update>
+    <!-- 增加库存 -->
+    <update id="increaseProductStock">
+        UPDATE school.products
         SET product_stock = product_stock + #{quantity}
         WHERE product_id = #{productId}
     </update>
 
     <!-- 插入普通商品（使用自增主键回填） -->
-    <insert id="insert" parameterType="com.sky.entity.Product">
-        INSERT INTO products
+    <insert id="insert" parameterType="com.sky.entity.Product" useGeneratedKeys="true" keyProperty="productId">
+        INSERT INTO school.products
         (product_name, product_price, product_stock, product_limit, product_image_url)
         VALUES
-        (#{productName,jdbcType=VARCHAR},
-        #{productPrice,jdbcType=DECIMAL},
-        #{productStock,jdbcType=INTEGER},
-        #{productLimit,jdbcType=INTEGER},
-        #{productImageUrl,jdbcType=VARCHAR})
-        <!-- MyBatis 自动获取自增主键 -->
-        <selectKey keyProperty="productId" order="AFTER" resultType="java.lang.Integer">
-            SELECT LAST_INSERT_ID()
-        </selectKey>
+        (#{productName},
+        #{productPrice},
+        #{productStock},
+        #{productLimit},
+        #{productImageUrl}
+        )
     </insert>
 
 </mapper>

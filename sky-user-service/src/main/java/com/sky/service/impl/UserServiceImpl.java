@@ -43,7 +43,6 @@ public class UserServiceImpl implements UserService {
             throw new PasswordErrorException(MessageConstant.PASSWORD_ERROR);
         }
 
-
        return user;
      }
     /**
@@ -73,7 +72,6 @@ public class UserServiceImpl implements UserService {
         return new PageResult(total,records);
     }
 
-
     /**
      * 根据phoneNumber查询用户信息
      * @param phoneNumber
@@ -84,7 +82,6 @@ public class UserServiceImpl implements UserService {
         User user = userMapper.getByPhone(phoneNumber);
         return user;
     }
-
 
     /**
      * 修改用户信息
@@ -98,10 +95,8 @@ public class UserServiceImpl implements UserService {
         userMapper.update(user);
     }
 
-
     public UserVO select(Integer userId){
         return userMapper.select(userId);
     }
-
 
 }

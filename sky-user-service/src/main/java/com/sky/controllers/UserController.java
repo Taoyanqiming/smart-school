@@ -3,31 +3,24 @@ package com.sky.controllers;
 import com.sky.constant.JwtClaimsConstant;
 import com.sky.dto.UserDTO;
 import com.sky.dto.UserLoginDTO;
-import com.sky.dto.UserPageQueryDTO;
 import com.sky.entity.User;
 import com.sky.exception.*;
 import com.sky.properties.JwtProperties;
-import com.sky.result.PageResult;
 import com.sky.result.Result;
 import com.sky.service.UserService;
 import com.sky.utils.JwtUtil;
 import com.sky.vo.UserLoginVO;
 import com.sky.vo.UserVO;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
 import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
 @RestController
 @RequestMapping("/user")
 @Slf4j
-@Api(tags = "用户相关接口")
 public class UserController {
     @Autowired
     private UserService userService;
@@ -69,7 +62,6 @@ public class UserController {
      * @return
      */
     @PutMapping("/update")
-    @ApiOperation("编辑用户信息")
     public Result update(@RequestBody UserDTO userDTO) {
         log.info("编辑用户信息：{}", userDTO);
         try {
@@ -94,7 +86,6 @@ public class UserController {
      * @return
      */
     @PostMapping("/register")
-    @ApiOperation("新增用户")
     public Result save(@RequestBody UserDTO userDTO) {
         User user = userService.getByNumber(userDTO.getPhoneNumber());
         if (user != null) {
@@ -109,9 +100,7 @@ public class UserController {
         }
     }
 
-
     @GetMapping("/info")
-    @ApiOperation("返回用户详情信息")
     public Result<UserVO> select(HttpServletRequest request) {
         Integer userId = Integer.valueOf(request.getParameter("userId"));
        return Result.success(userService.select(userId));

@@ -8,13 +8,13 @@ sky:
     password: 123456
 
   redis:
-    host: localhost
+    host: 192.168.200.141
     port: 6379
     password:
     database: 10
 
   rabbitmq:
-    host: 192.168.200.133
+    host: 192.168.200.141
     port: 5672
     username: user
     password: user

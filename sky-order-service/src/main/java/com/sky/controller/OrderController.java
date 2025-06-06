@@ -9,6 +9,8 @@ import com.sky.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+
 @RestController
 @RequestMapping("/order")
 public class OrderController {
@@ -18,8 +20,8 @@ public class OrderController {
     /**
      * 分页查询订单
      */
-    @GetMapping("/list")
-    public Result<PageResult> getAllOrders(OrderPageDTO orderPageDTO) {
+    @PostMapping("/list")
+    public Result<PageResult> getAllOrders(@RequestBody OrderPageDTO orderPageDTO) {
         PageResult orders = orderService.pageQuery(orderPageDTO);
         return Result.success(orders);
     }
@@ -27,16 +29,17 @@ public class OrderController {
     /**
      * 根据Id查询秒杀记录，用于限购
      */
-    @PostMapping("/search")
-    public UserSeckillRecord searchOrders(OrderSearchDTO orderSearchDTO) {
-        UserSeckillRecord order = orderService.searchOrder(orderSearchDTO);
+    @GetMapping("/search")
+    public UserSeckillRecord searchSeckillRecord(@RequestParam Integer seckillId, HttpServletRequest request) {
+        Integer userId = Integer.valueOf( request.getHeader("X-User-Id"));
+        UserSeckillRecord order = orderService.searchOrder(userId,seckillId);
         return order;
     }
     /**
      * 查看订单详情
      */
-    @PostMapping("/order/info")
-    public Result<Order> searchOrder(Integer orderId) {
+    @GetMapping("/order/info")
+    public Result<Order> searchOrder(@RequestParam String orderId) {
         Order order = orderService.findOrder(orderId);
         return Result.success(order);
     }
@@ -44,25 +47,17 @@ public class OrderController {
      * 创建秒杀记录
      */
     @PostMapping("/create/seckill")
-    public Result createSeck(SeckillCreateDTO seckillCreateDTO){
+    public Result createSeck(@RequestBody SeckillCreateDTO seckillCreateDTO){
         orderService.createSeckill(seckillCreateDTO);
         return Result.success();
     }
 
-//    /**
-//     * 更新秒杀记录
-//     */
-//    @PutMapping("/update/seckill")
-//    public Result updateSeck(@PathVariable Integer seckillId){
-//        orderService.updateSeckill(seckillId);
-//        return Result.success();
-//    }
 
     /**
      * 更新订单状态，付款or取消
      */
     @PutMapping("/order/ok")
-    public Result updateSeckOK(OrderStatusDTO orderStatusDTO){
+    public Result updateSeckOK(@RequestBody OrderStatusDTO orderStatusDTO){
         orderService.updateOrderStatus(orderStatusDTO);
         return Result.success();
     }

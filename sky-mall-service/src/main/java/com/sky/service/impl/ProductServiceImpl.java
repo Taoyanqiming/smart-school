@@ -14,16 +14,15 @@ import com.sky.service.ProductService;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.data.redis.core.RedisCallback;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
-
 
 /**
  * 商品服务实现类
@@ -34,7 +33,7 @@ public class ProductServiceImpl implements ProductService {
     @Autowired
     private ProductMapper productMapper;
     @Autowired
-    private RedisTemplate<String, Object> redisTemplate;
+    private RedisTemplate<String, String> redisTemplate;
     @Autowired
     OrderFeignService orderFeignService;
     @Autowired
@@ -64,11 +63,11 @@ public class ProductServiceImpl implements ProductService {
      * @return 包含分页信息和秒杀商品列表的 PageResult 对象
      */
     @Override
-    public PageResult getSeckillProducts(ProductPageQueryDTO productPageQueryDTO) {
+    public PageResult getSeckillProducts(SeckillPageQueryDTO seckillPageQueryDTO) {
         // 开启分页查询，设置当前页码和每页显示数量
-        PageHelper.startPage(productPageQueryDTO.getPage(), productPageQueryDTO.getPageSize());
+        PageHelper.startPage(seckillPageQueryDTO.getPage(), seckillPageQueryDTO.getPageSize());
         // 调用 SeckillProductMapper 的 pageQuery 方法进行分页查询，返回一个 Page 对象
-        Page<SeckillProduct> page = seckillProductMapper.pageQuery(productPageQueryDTO);
+        Page<SeckillProduct> page = seckillProductMapper.pageQuery(seckillPageQueryDTO);
         // 获取查询结果的总记录数
         long total = page.getTotal();
         // 获取当前页的秒杀商品记录列表
@@ -84,12 +83,9 @@ public class ProductServiceImpl implements ProductService {
         if (seckillId == null) {
             return null;
         }
-
         String seckillKey = "seckill:product:" + seckillId;
-
         // 1. 优先从 Redis 中获取商品信息
         Map<Object, Object> productMap = redisTemplate.opsForHash().entries(seckillKey);
-
         if (productMap != null && !productMap.isEmpty()) {
             // 2. 从 Redis 中获取到数据，转换为对象
             return convertMapToSeckillProduct(productMap);
@@ -97,6 +93,7 @@ public class ProductServiceImpl implements ProductService {
         // 获取锁失败，直接查询数据库（降级处理）
         return seckillProductMapper.getSeckillProductById(seckillId);
     }
+
     /**
      * 获取单个product详情
      * @param productId
@@ -116,14 +113,12 @@ public class ProductServiceImpl implements ProductService {
         if (map == null || map.isEmpty()) {
             return null;
         }
-
         SeckillProduct product = new SeckillProduct();
         product.setSeckillId(Integer.valueOf(map.get("seckillId").toString()));
         product.setProductId(Integer.valueOf(map.get("productId").toString()));
         product.setSeckillPrice(new BigDecimal(map.get("seckillPrice").toString()));
         product.setSeckillStock(Integer.valueOf(map.get("seckillStock").toString()));
         product.setSeckillLimit(Integer.valueOf(map.get("seckillLimit").toString()));
-
         return product;
     }
 
@@ -137,18 +132,55 @@ public class ProductServiceImpl implements ProductService {
         Integer userId = seckillCreateDTO.getUserId();
         Integer seckillId = seckillCreateDTO.getSeckillId();
         Integer quantity = seckillCreateDTO.getPurchaseQuantity();
-        String orderId = UUID.randomUUID().toString();
-        System.out.println("UUID.randomUUID()"+orderId);
+        String orderId = UUID.randomUUID().toString() + userId;
+
+        // ========== 打印请求参数 ==========
+        System.out.println("\n===== 秒杀请求开始 ======");
+        System.out.println("请求参数：");
+        System.out.println("  userId: " + userId);
+        System.out.println("  seckillId: " + seckillId);
+        System.out.println("  quantity: " + quantity);
+        System.out.println("  orderId: " + orderId);
+
         if (seckillId == null) {
+            System.out.println("错误：秒杀ID为空");
             return Result.error("秒杀ID不能为空");
         }
 
+        // ========== 打印当前系统时间 ==========
+        LocalDateTime now = LocalDateTime.now();
+        long currentTimeMillis = System.currentTimeMillis();
+        long currentTimeSeconds = currentTimeMillis / 1000;
+        System.out.println("\n当前系统时间：");
+        System.out.println("  本地时间：" + now);
+        System.out.println("  毫秒级时间戳：" + currentTimeMillis);
+        System.out.println("  秒级时间戳：" + currentTimeSeconds);
+
+        // ========== 读取 Redis 中的秒杀时间 ==========
+        String startTimeKey = "seckill:start_time:" + seckillId;
+        String endTimeKey = "seckill:end_time:" + seckillId;
+        String stockKey = "seckill:stock:" + seckillId;
+        String limitKey = "seckill:limit:" + seckillId;
+
+        String startTimeValue = redisTemplate.opsForValue().get(startTimeKey);
+        String endTimeValue = redisTemplate.opsForValue().get(endTimeKey);
+        String stockValue = redisTemplate.opsForValue().get(stockKey);
+        String limitValue = redisTemplate.opsForValue().get(limitKey);
+
+        System.out.println("\nRedis 数据检查：");
+        System.out.println("  " + startTimeKey + ": " + startTimeValue);
+        System.out.println("  " + endTimeKey + ": " + endTimeValue);
+        System.out.println("  " + stockKey + ": " + stockValue);
+        System.out.println("  " + limitKey + ": " + limitValue);
+
+        // ========== 执行 Lua 脚本 ==========
         List<String> args = Arrays.asList(
                 seckillId.toString(),
                 userId.toString(),
                 orderId,
                 quantity.toString()
         );
+        System.out.println("\n执行 Lua 脚本，参数：" + args);
 
         Long result = redisTemplate.execute(
                 seckillScript,
@@ -156,43 +188,39 @@ public class ProductServiceImpl implements ProductService {
                 args.toArray(new String[0])
         );
 
-        if (result != null && result == 0) {
-            // 秒杀成功逻辑...
+        System.out.println("\nLua 脚本返回结果：" + result);
 
+        // ========== 处理结果 ==========
+        if (result != null && result == 0) {
+            System.out.println("秒杀成功，生成订单：" + orderId);
+            // 生成订单逻辑...
             Order order=Order.builder()
                     .orderId(orderId)
                     .userId(seckillCreateDTO.getUserId())
-                    .productId(seckillCreateDTO.getSeckillId())
+                    .seckillId(seckillCreateDTO.getSeckillId())
                     .orderQuantity(seckillCreateDTO.getPurchaseQuantity())
-                    .orderTime(LocalDateTime.now())
                     .build();
             mallSender.sendOrderMessage(order);
-
             return Result.success("秒杀成功");
-
         } else {
-            // 处理失败情况，构建统一结果
-            Result<String> resultObj;
-            switch (result.intValue()) {
+            String errorMsg = "未知错误";
+            switch (result != null ? result.intValue() : -1) {
                 case 1:
-                    resultObj = Result.error("秒杀未开始");
+                    errorMsg = "秒杀未开始";
                     break;
                 case 2:
-                    resultObj = Result.error("秒杀已结束");
+                    errorMsg = "秒杀已结束";
                     break;
                 case 3:
-                    resultObj = Result.error("库存不足");
+                    errorMsg = "库存不足";
                     break;
                 case 4:
-                    resultObj = Result.error("超过限购数量");
-                    break;
-                default:
-                    resultObj = Result.error("秒杀失败，请重试");
+                    errorMsg = "超过限购数量";
                     break;
             }
-            return resultObj;
+            System.out.println("秒杀失败，原因：" + errorMsg);
+            return Result.error(errorMsg);
         }
-
     }
 
     /**
@@ -305,50 +333,55 @@ public class ProductServiceImpl implements ProductService {
         long endSeconds = endTime.atZone(ZoneId.of("UTC")).toEpochSecond();
 
         // 构建 Redis Key
-        String seckillKey = "seckill:product:" + seckillProduct.getSeckillId(); //限购商品全部信息
-        String stockKey = "seckill:stock:" + seckillProduct.getSeckillId();  //库存
-        String startTimeKey = "seckill:start_time:" + seckillProduct.getSeckillId(); // 开始时间
-        String endTimeKey = "seckill:end_time:" + seckillProduct.getSeckillId();   // 结束时间
-        String limitKey = "seckill:limit:" + seckillProduct.getSeckillId();       // 新增限购 Key
+        String seckillKey = "seckill:product:" + seckillProduct.getSeckillId();
+        String stockKey = "seckill:stock:" + seckillProduct.getSeckillId();
+        String startTimeKey = "seckill:start_time:" + seckillProduct.getSeckillId();
+        String endTimeKey = "seckill:end_time:" + seckillProduct.getSeckillId();
+        String limitKey = "seckill:limit:" + seckillProduct.getSeckillId();
 
-        // 存储秒杀商品信息（Hash）
+
+
+        // 构建秒杀商品信息 Map 时，将所有数值类型转换为字符串
         Map<String, Object> seckillProductMap = new HashMap<>();
-        seckillProductMap.put("seckillId", seckillProduct.getSeckillId());
-        seckillProductMap.put("productId", seckillProduct.getProductId());
+        seckillProductMap.put("seckillId", seckillProduct.getSeckillId().toString());
+        seckillProductMap.put("productId", seckillProduct.getProductId().toString());
         seckillProductMap.put("seckillPrice", seckillProduct.getSeckillPrice().toString());
-        // 时间存储为字符串（原代码保留，供业务查询使用，但 Lua 脚本不依赖这里的时间）
         seckillProductMap.put("seckillStartTime", startTime.toString());
         seckillProductMap.put("seckillEndTime", endTime.toString());
-        seckillProductMap.put("seckillStock", seckillProduct.getSeckillStock());
-        seckillProductMap.put("seckillLimit", seckillProduct.getSeckillLimit());
+        seckillProductMap.put("seckillStock", String.valueOf(seckillProduct.getSeckillStock())); // 使用 String.valueOf()
+        seckillProductMap.put("seckillLimit", String.valueOf(seckillProduct.getSeckillLimit())); // 使用 String.valueOf()
+
+        // 存储到 Redis（Hash 类型）
         redisTemplate.opsForHash().putAll(seckillKey, seckillProductMap);
 
-        // 存储独立的时间戳、库存、限购
-        redisTemplate.opsForValue().set(stockKey, seckillProduct.getSeckillStock().toString());
+        // 存储独立的时间戳、库存、限购（确保存储为 String）
+        redisTemplate.opsForValue().set(stockKey, String.valueOf(seckillProduct.getSeckillStock()));
         redisTemplate.opsForValue().set(startTimeKey, String.valueOf(startSeconds)); // 秒级时间戳
         redisTemplate.opsForValue().set(endTimeKey, String.valueOf(endSeconds));     // 秒级时间戳
-        redisTemplate.opsForValue().set(limitKey, seckillProduct.getSeckillLimit().toString());
+        redisTemplate.opsForValue().set(limitKey, String.valueOf(seckillProduct.getSeckillLimit()));
+
 
         // 其他逻辑（列表缓存、过期时间）...（同原代码）
 
         return Result.success("秒杀商品发布成功");
     }
 
-
     /**
-     * 修改库存
+     * 修改库存,库存减少
      * @param productId
      * @param account
      */
-    public void updateRepertory(Integer productId, Integer account) {
+    public void decreaseRepertory(Integer seckillId,Integer productId, Integer account) {
         productMapper.decreaseProductStock(productId, account);
+        seckillProductMapper.decreaseSeckillStock(seckillId,account);
     }
+
     /**
-     * 修改限时商品库存
+     * 修改限时商品库存退货，库存增加
      * @param seckillId
      * @param account
      */
-    public void updateSecRepertory(Integer seckillId, Integer account) {
+    public void increaseRepertory(Integer seckillId,Integer productId, Integer account) {
         if (account > 0) {
             // 构建 Redis Key
             String seckillKey = "seckill:product:" + seckillId;
@@ -372,6 +405,8 @@ public class ProductServiceImpl implements ProductService {
                 );
                 // 2. 更新 Hash 中的库存字段（可选，保持数据冗余一致性）
                 redisTemplate.opsForHash().increment(seckillKey, "seckillStock", account);
+                productMapper.increaseProductStock(productId, account);
+                seckillProductMapper.increaseSeckillStock(seckillId,account);
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
                 System.out.println("获取分布式锁被中断"+ e);

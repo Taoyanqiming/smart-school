@@ -9,6 +9,7 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 @FeignClient(name="sky-order-service")
 public interface OrderFeignService { // 注意：这里应该是interface而不是class
@@ -16,11 +17,11 @@ public interface OrderFeignService { // 注意：这里应该是interface而不�
      * 查询订单
      */
     @PostMapping("/order/search")
-    UserSeckillRecord searchOrders(OrderSearchDTO orderSearchDTO); // 添加分号;
+    UserSeckillRecord searchOrders(@RequestBody OrderSearchDTO orderSearchDTO); // 添加分号;
 
     @PostMapping("/order/create/seckill")
-    Result createSeck(SeckillCreateDTO seckillCreateDTO);
+    Result createSeck(@RequestBody SeckillCreateDTO seckillCreateDTO);
 
     @PutMapping("/order/update/seckill")
-    Result updateSeck(SeckillCreateDTO seckillCreateDTO);
+    Result updateSeck(@RequestBody SeckillCreateDTO seckillCreateDTO);
 }

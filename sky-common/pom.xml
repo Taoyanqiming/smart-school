@@ -47,21 +47,7 @@
             <groupId>javax.xml.bind</groupId>
             <artifactId>jaxb-api</artifactId>
         </dependency>
-        <!--微信支付-->
-<!--        <dependency>-->
-<!--            <groupId>com.github.wechatpay-apiv3</groupId>-->
-<!--            <artifactId>wechatpay-apache-httpclient</artifactId>-->
-<!--        </dependency>-->
-        <dependency>
-            <groupId>org.springframework.data</groupId>
-            <artifactId>spring-data-redis</artifactId>
-        </dependency>
-        <!-- 保留Knife4j（移除Swagger相关依赖） -->
-        <dependency>
-            <groupId>com.github.xiaoymin</groupId>
-            <artifactId>knife4j-spring-boot-starter</artifactId>
-            <version>3.0.3</version> <!-- 建议指定版本，避免默认版本冲突 -->
-        </dependency>
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-amqp</artifactId>

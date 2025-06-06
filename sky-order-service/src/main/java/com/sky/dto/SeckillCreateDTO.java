@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SeckillCreateDTO {
-
+    private String recordId;
     private Integer userId;
     private Integer seckillId;
     private Integer purchaseQuantity;

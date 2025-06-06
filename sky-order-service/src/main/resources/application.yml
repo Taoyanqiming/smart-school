@@ -1,5 +1,5 @@
 server:
-  port: 8085
+  port: 8087
 
 spring:
   profiles:
@@ -31,15 +31,21 @@ spring:
 #      test-while-idle: true      # 空闲时进行有效性检查
 #      time-between-eviction-runs-millis: 60000 # 定期检查空闲连接的时间（毫秒）
 #      min-evictable-idle-time-millis: 300000 # 空闲连接的最小可回收时间（毫秒）
+  rabbitmq:
+      host: ${sky.rabbitmq.host}
+      port: ${sky.rabbitmq.port}
+      virtual-host: /quick
+      username: ${sky.rabbitmq.username}
+      password: ${sky.rabbitmq.password}
 
-  redis:
-    host: ${sky.redis.host}
-    port: ${sky.redis.port}
-    password: ${sky.redis.password}
-    database: ${sky.redis.database}
+
+#      config:
+#        server-addr: 127.0.0.1:8848 # Nacos 服务器地址，根据实际情况修改
+#        file-extension: yaml
+
 
 mybatis:
-  mapper-locations: classpath:*.xml
+  mapper-locations: classpath:**/mapper/*.xml
   type-aliases-package: com.sky.entity
   configuration:
     map-underscore-to-camel-case: true

@@ -3,7 +3,7 @@
 <mapper namespace="com.sky.mapper.SeckillProductMapper">
 
     <!-- 分页查询秒杀商品 -->
-    <select id="pageQuery" resultMap="com.sky.entity.SeckillProduct" parameterType="com.sky.dto.ProductPageQueryDTO">
+    <select id="pageQuery" resultType="com.sky.entity.SeckillProduct" parameterType="com.sky.dto.SeckillPageQueryDTO">
         SELECT * FROM school.seckill_products
         <where>
             <if test="startTime != null">
@@ -37,4 +37,24 @@
         SET seckill_stock = seckill_stock + #{quantity}
         WHERE seckill_id = #{seckillId}
     </update>
+
+    <insert id="insertSeck" parameterType="com.sky.entity.SeckillProduct" useGeneratedKeys="true" keyProperty="seckillId">
+        INSERT INTO school.seckill_products (
+            product_id,
+            seckill_price,
+            seckill_start_time,
+            seckill_end_time,
+            seckill_stock,
+            seckill_limit,
+            seckill_image_url
+        ) VALUES (
+                     #{productId},
+                     #{seckillPrice},
+                     #{seckillStartTime},
+                     #{seckillEndTime},
+                     #{seckillStock},
+                     #{seckillLimit},
+                     #{seckillImageUrl}
+                 )
+    </insert>
 </mapper>

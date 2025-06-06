@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sky.mapper.UserSeckillRecordMapper">
+
+    <!-- 根据用户ID和秒杀商品ID获取用户秒杀记录 -->
+    <select id="getRecordByUserIdAndSeckillId"
+            resultType="com.sky.entity.UserSeckillRecord">
+        SELECT
+            record_id AS recordId,
+            user_id AS userId,
+            seckill_id AS seckillId,
+            purchase_quantity AS purchaseQuantity
+        FROM
+            school.user_seckill_records
+        WHERE
+            user_id = #{userId}
+          AND seckill_id = #{seckillId}
+    </select>
+
+    <!-- 插入用户秒杀记录 -->
+    <insert id="insertRecord" parameterType="com.sky.dto.SeckillCreateDTO">
+        INSERT INTO school.user_seckill_records (
+            record_id,
+            user_id,
+            seckill_id,
+            purchase_quantity
+        ) VALUES (
+                     #{recordId},
+                     #{userId},
+                     #{seckillId},
+                     #{purchaseQuantity}
+                 )
+    </insert>
+
+    <!-- 更新用户秒杀记录 -->
+    <update id="updateRecord">
+        UPDATE school.user_seckill_records
+        SET
+            purchase_quantity = #{quantity}
+        WHERE
+            user_id = #{userId}
+          AND seckill_id = #{seckillId}
+    </update>
+
+</mapper>

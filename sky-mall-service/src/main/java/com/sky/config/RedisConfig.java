@@ -16,5 +16,4 @@ public class RedisConfig {
         return redisScript;
     }
 
-    // RedisTemplate配置（同上）
 }

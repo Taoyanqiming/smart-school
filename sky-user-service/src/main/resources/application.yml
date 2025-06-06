@@ -32,18 +32,13 @@ spring:
 #      time-between-eviction-runs-millis: 60000 # 定期检查空闲连接的时间（毫秒）
 #      min-evictable-idle-time-millis: 300000 # 空闲连接的最小可回收时间（毫秒）
 
-  redis:
-    host: ${sky.redis.host}
-    port: ${sky.redis.port}
-    password: ${sky.redis.password}
-    database: ${sky.redis.database}
-
 mybatis:
   mapper-locations: classpath:*.xml
   type-aliases-package: com.sky.entity
   configuration:
     map-underscore-to-camel-case: true
-
+redis:
+  enabled: false
 logging:
   level:
     com:
@@ -58,3 +53,6 @@ sky:
     ttl: 86400000
     token-name: Authorization
 
+springfox:
+  documentation:
+    enabled: false

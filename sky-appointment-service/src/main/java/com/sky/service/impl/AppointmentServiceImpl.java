@@ -1,6 +1,5 @@
 package com.sky.service.impl;
 
-import com.github.pagehelper.PageHelper;
 import com.sky.dto.AppointmentDTO;
 import com.sky.dto.MessageDTO;
 import com.sky.entity.Appointment;
@@ -8,7 +7,6 @@ import com.sky.entity.AppointmentLog;
 import com.sky.mapper.AppointmentLogMapper;
 import com.sky.mapper.AppointmentMapper;
 import com.sky.rabbitmq.appointSender;
-import com.sky.result.PageResult;
 import com.sky.service.AppointmentService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -3,6 +3,7 @@ package com.sky.mapper;
 import com.github.pagehelper.Page;
 
 import com.sky.dto.ProductPageQueryDTO;
+import com.sky.dto.SeckillPageQueryDTO;
 import com.sky.entity.SeckillProduct;
 import org.apache.ibatis.annotations.Mapper;
 
@@ -17,7 +18,7 @@ public interface SeckillProductMapper {
      * 分页获取秒杀商品列表
      * @return 分页秒杀商品列表
      */
-    Page<SeckillProduct> pageQuery(ProductPageQueryDTO productPageQueryDTO);
+    Page<SeckillProduct> pageQuery(SeckillPageQueryDTO seckillPageQueryDTO);
 
     /**
      * 根据秒杀商品ID获取秒杀商品信息

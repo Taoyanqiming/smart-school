@@ -2,14 +2,11 @@ package com.sky.mapper;
 
 import com.github.pagehelper.Page;
 import com.sky.dto.OrderPageDTO;
-import com.sky.dto.OrderSearchDTO;
 import com.sky.dto.OrderStatusDTO;
 import com.sky.dto.SeckillCreateDTO;
 import com.sky.entity.Order;
-import com.sky.entity.UserSeckillRecord;
 import org.apache.ibatis.annotations.Mapper;
 
-import java.util.Map;
 import java.util.List;
 /**
  * 订单数据访问层接口
@@ -28,8 +25,7 @@ public interface OrderMapper {
      * @param orderId 订单 ID
      * @return 订单信息
      */
-    Order getOrderById(Integer orderId);
-
+    Order getOrderById(String orderId);
 
     /**
      * 查询订单
@@ -38,11 +34,6 @@ public interface OrderMapper {
      */
     Page<Order> pageQuery(OrderPageDTO orderPageDTO);
 
-    UserSeckillRecord searchOrder(OrderSearchDTO orderSearchDTO);
-
-    void updateSeckill(SeckillCreateDTO seckillCreateDTO);
-
-    void createSeckill(SeckillCreateDTO seckillCreateDTO);
 
     /**
      * 更新订单状态

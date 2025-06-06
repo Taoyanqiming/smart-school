@@ -28,10 +28,8 @@ spring:
         - id: order-service-route
           uri: lb://order-service
           predicates:
-            - Path=/api/order/**,/order/**,/message-service/v2/api-docs,/message-service/v3/api-docs
-          filters:
-            - RewritePath=/api/order/(?<segment>.*), /$\{segment}
-            - StripPrefix=1 # 去除1级前缀
+            - Path=/order/**
+
 
         # ---------------------- 消息服务 ----------------------
         - id: message-service-route

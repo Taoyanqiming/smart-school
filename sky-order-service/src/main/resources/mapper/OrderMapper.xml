@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sky.mapper.OrderMapper">
+
+    <!-- 插入订单信息 -->
+    <insert id="insertOrder" parameterType="com.sky.entity.Order">
+        INSERT INTO school.orders (
+            order_id,
+            user_id,
+            product_id,
+            seckill_id,
+            order_quantity,
+            order_price,
+            order_status,
+            create_time,
+            payment_time
+        ) VALUES (
+                     #{orderId},
+                     #{userId},
+                     #{productId},
+                     #{seckillId},
+                     #{orderQuantity},
+                     #{orderPrice},
+                     #{orderStatus},
+                     #{createTime},
+                     #{paymentTime}
+                 )
+    </insert>
+
+    <!-- 根据订单ID查询订单 -->
+    <select id="getOrderById" resultType="com.sky.entity.Order">
+        SELECT * FROM school.orders WHERE order_id = #{orderId}
+    </select>
+
+    <!-- 分页查询订单 -->
+    <select id="pageQuery" resultType="com.sky.entity.Order" parameterType="com.sky.dto.OrderPageDTO">
+        SELECT * FROM school.orders
+        WHERE user_id = #{userId}
+        <if test="orderStatus != null">AND order_status = #{orderStatus}</if>
+        <if test="createTime != null">AND create_time >= #{createTime}</if>
+        ORDER BY create_time DESC
+    </select>
+
+
+
+<!--    &lt;!&ndash; 更新秒杀订单信息 &ndash;&gt;-->
+<!--    <update id="updateSeckill" parameterType="com.sky.dto.SeckillCreateDTO">-->
+<!--        UPDATE school.orders-->
+<!--        SET-->
+<!--            order_status = '已支付',-->
+<!--            payment_time = NOW()-->
+<!--        WHERE-->
+<!--            order_id = #{orderId}-->
+<!--          AND user_id = #{userId}-->
+<!--          AND seckill_id = #{seckillId}-->
+<!--    </update>-->
+
+
+    <!-- 更新订单状态 -->
+    <update id="updateStatus" parameterType="com.sky.dto.OrderStatusDTO">
+        UPDATE school.orders
+        SET
+        order_status = #{orderStatus}
+        WHERE
+        order_id = #{orderId}
+        <if test="userId != null">AND user_id = #{userId}</if>
+    </update>
+
+    <!-- 查询所有未支付订单 -->
+    <select id="findAll" resultType="com.sky.entity.Order">
+        SELECT * FROM school.orders WHERE order_status = '未支付'
+    </select>
+
+</mapper>

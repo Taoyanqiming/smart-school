@@ -24,7 +24,7 @@ public interface ProductService {
      * 获取秒杀商品列表
      * @return 秒杀商品列表
      */
-    PageResult getSeckillProducts(ProductPageQueryDTO productPageQueryDTO);
+    PageResult getSeckillProducts(SeckillPageQueryDTO seckillPageQueryDTO);
 
     /**
      * 购买商品
@@ -61,8 +61,8 @@ public interface ProductService {
      * @param productId
      * @param account
      */
-    void updateRepertory(Integer productId, Integer account);
-    void updateSecRepertory(Integer seckillId, Integer account);
+    void decreaseRepertory(Integer seckillId,Integer productId, Integer account);
+    void increaseRepertory(Integer seckillId,Integer productId, Integer account);
     /**
      * 获取单个product详情
      * @param productId

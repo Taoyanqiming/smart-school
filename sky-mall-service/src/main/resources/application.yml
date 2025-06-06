@@ -1,5 +1,5 @@
 server:
-  port: 8083
+  port: 8086
 
 spring:
   profiles:
@@ -14,7 +14,7 @@ spring:
   cloud:
     nacos:
       discovery:
-        server-addr: 127.0.0.1:8848 # Nacos 服务器地址，根据实际情况修改
+        server-addr: 127.0.0.1:8848
 
   datasource:
 #    druid:
@@ -43,13 +43,8 @@ spring:
     password: ${sky.redis.password}
     database: ${sky.redis.database}
 
-#      config:
-#        server-addr: 127.0.0.1:8848 # Nacos 服务器地址，根据实际情况修改
-#        file-extension: yaml
-
-
 mybatis:
-  mapper-locations: classpath:mapper/*.xml
+  mapper-locations: classpath:**/mapper/*.xml
   type-aliases-package: com.sky.entity
   configuration:
     map-underscore-to-camel-case: true
@@ -59,8 +54,8 @@ logging:
     com:
       sky:
         mapper: debug
-        service: info
-        controller: info
+        service: debug
+        controller: debug
 
 sky:
   jwt:

@@ -9,22 +9,17 @@ public interface OrderService {
     PageResult pageQuery(OrderPageDTO orderPageDTO);
 
     /**
-     * 查询订单
-     * @param orderSearchDTO
+     * 查询秒杀记录
      * @return
      */
-    UserSeckillRecord searchOrder(OrderSearchDTO orderSearchDTO);
+    UserSeckillRecord searchOrder(Integer userId,Integer seckillId);
 
     /**
      * 创建秒杀记录
      * @param seckillCreateDTO
      */
     void createSeckill(SeckillCreateDTO seckillCreateDTO);
-    /**
-     * 更新秒杀记录
-     * @param seckillCreateDTO
-     */
-    void updateSeckill(SeckillCreateDTO seckillCreateDTO);
+
 
     /**
      * 更新订单状态
@@ -37,5 +32,5 @@ public interface OrderService {
      * @param orderId
      * @return
      */
-    Order findOrder(Integer orderId);
+    Order findOrder(String orderId);
 }

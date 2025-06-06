@@ -48,8 +48,8 @@ public class JwtAuthFilter implements GlobalFilter, Ordered {
             "/user/login",
             "/doc.html",
             "/webjars/**",
-            "/v2/api-docs",
-            "/swagger-resources/**"
+            "/v2/api-docs"
+
     };
 
     // 权限路径配置（路径模式 -> 允许的角色列表）

@@ -20,7 +20,7 @@ public class MallSender {
     public void sendOrderMessage(Order order) {
         rabbitTemplate.convertAndSend(
                 RabbitMQConfig.MESSAGE_EXCHANGE,
-                "order.success",  // 路由键
+                "product.create",  // 路由键
                 order  // 消息内容
         );
     }

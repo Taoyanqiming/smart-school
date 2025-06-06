@@ -28,7 +28,7 @@ public class UserInfoAspect {
     ));
 
     // 定义切点：匹配所有 Controller 中的 POST 请求方法
-    @Pointcut("execution(* com.sky.controller..*(..)) && @annotation(org.springframework.web.bind.annotation.PostMapping)")
+    @Pointcut("execution(* com.sky.controller..*(..)) && @annotation(org.springframework.web.bind.annotation.PostMapping) ")
     public void postControllerMethod() {}
 
     @Before("postControllerMethod()")
@@ -117,8 +117,7 @@ public class UserInfoAspect {
 
         // 检查字段名称是否包含 "userId" 或类似名称
         String fieldName = field.getName().toLowerCase();
-        return fieldName.contains("userid") ||
-                fieldName.contains("creatorid") ||
-                fieldName.contains("authorid");
+        return fieldName.contains("userid");
+
     }
 }

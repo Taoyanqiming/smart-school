@@ -7,14 +7,14 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
-@Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class OrderPageDTO {
-    private Integer userId;
-    private String orderStatus;
-    private LocalDateTime createTime;
+@Data
+public class SeckillPageQueryDTO {
+
     private int page;
     private  int pageSize;
+    private LocalDateTime startTime;
+    private LocalDateTime endTime;
 }
